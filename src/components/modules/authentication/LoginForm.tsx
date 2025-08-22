@@ -13,6 +13,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import PasswordInput from "@/components/ui/password-input";
+import config from "@/config";
 import { useLoginMutation } from "@/redux/feature/auth/auth.api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -115,7 +116,13 @@ export function LoginForm({
             Or continue with
           </span>
         </div>
-        <Button variant="outline" className="w-full">
+        <Button
+          onClick={() => {
+            window.open(`${config.apiBaseUrl}/auth/google`, "_blank");
+          }}
+          variant="outline"
+          className="w-full"
+        >
           <img
             className="size-4"
             src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Google_Favicon_2025.svg"

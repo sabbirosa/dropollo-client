@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import PasswordInput from "@/components/ui/password-input";
+import config from "@/config";
 import { cn } from "@/lib/utils";
 import { useRegisterMutation } from "@/redux/feature/auth/auth.api";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -158,7 +159,13 @@ export function RegistrationForm({
             Or continue with
           </span>
         </div>
-        <Button variant="outline" className="w-full">
+        <Button
+          onClick={() => {
+            window.open(`${config.apiBaseUrl}/auth/google`, "_blank");
+          }}
+          variant="outline"
+          className="w-full"
+        >
           <img
             className="size-4"
             src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Google_Favicon_2025.svg"
