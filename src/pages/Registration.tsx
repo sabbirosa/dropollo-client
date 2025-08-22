@@ -1,21 +1,7 @@
 import Logo from "@/components/layout/Logo";
 import { RegistrationForm } from "@/components/modules/authentication/RegistrationForm";
-import { useRegisterMutation } from "@/redux/feature/auth/auth.api";
-import { toast } from "sonner";
 
 export default function Registration() {
-  const [register] = useRegisterMutation();
-
-  const onSubmit = async (data: { email: string; password: string }) => {
-    try {
-      const response = await register(data).unwrap();
-      toast.success("Registration successful!");
-    } catch (error) {
-      toast.error("Registration failed. Please try again.");
-      console.error("Registration error:", error);
-    }
-  };
-
   return (
     <div className="grid min-h-svh lg:grid-cols-2">
       <div className="flex flex-col gap-4 p-6 md:p-10">
