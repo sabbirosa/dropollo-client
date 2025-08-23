@@ -1,3 +1,5 @@
+import { footerNavItems } from "@/config/navigation";
+import { Link } from "react-router";
 import Logo from "./Logo";
 
 export default function Footer() {
@@ -11,8 +13,8 @@ export default function Footer() {
             </div>
 
             <p className="mt-4 max-w-xs text-gray-500 dark:text-gray-400">
-              Lorem ipsum dolor, sit amet consectetur adipisicing elit. Esse non
-              cupiditate quae nam molestias.
+              Fast, reliable, and secure parcel delivery service. 
+              Track your packages in real-time and enjoy hassle-free shipping worldwide.
             </p>
 
             <ul className="mt-8 flex gap-6">
@@ -141,50 +143,16 @@ export default function Footer() {
               </p>
 
               <ul className="mt-6 space-y-4 text-sm">
-                <li>
-                  <a
-                    href="#"
-                    className="text-gray-700 transition hover:opacity-75 dark:text-gray-200"
-                  >
-                    1on1 Coaching
-                  </a>
-                </li>
-
-                <li>
-                  <a
-                    href="#"
-                    className="text-gray-700 transition hover:opacity-75 dark:text-gray-200"
-                  >
-                    Company Review
-                  </a>
-                </li>
-
-                <li>
-                  <a
-                    href="#"
-                    className="text-gray-700 transition hover:opacity-75 dark:text-gray-200"
-                  >
-                    Accounts Review
-                  </a>
-                </li>
-
-                <li>
-                  <a
-                    href="#"
-                    className="text-gray-700 transition hover:opacity-75 dark:text-gray-200"
-                  >
-                    HR Consulting
-                  </a>
-                </li>
-
-                <li>
-                  <a
-                    href="#"
-                    className="text-gray-700 transition hover:opacity-75 dark:text-gray-200"
-                  >
-                    SEO Optimisation
-                  </a>
-                </li>
+                {footerNavItems.services.map((item) => (
+                  <li key={item.href}>
+                    <Link
+                      to={item.href}
+                      className="text-gray-700 transition hover:opacity-75 dark:text-gray-200"
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
 
@@ -194,67 +162,35 @@ export default function Footer() {
               </p>
 
               <ul className="mt-6 space-y-4 text-sm">
-                <li>
-                  <a
-                    href="#"
-                    className="text-gray-700 transition hover:opacity-75 dark:text-gray-200"
-                  >
-                    About
-                  </a>
-                </li>
-
-                <li>
-                  <a
-                    href="#"
-                    className="text-gray-700 transition hover:opacity-75 dark:text-gray-200"
-                  >
-                    Meet the Team
-                  </a>
-                </li>
-
-                <li>
-                  <a
-                    href="#"
-                    className="text-gray-700 transition hover:opacity-75 dark:text-gray-200"
-                  >
-                    Accounts Review
-                  </a>
-                </li>
+                {footerNavItems.company.map((item) => (
+                  <li key={item.href}>
+                    <Link
+                      to={item.href}
+                      className="text-gray-700 transition hover:opacity-75 dark:text-gray-200"
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
 
             <div>
               <p className="font-medium text-gray-900 dark:text-white">
-                Helpful Links
+                Support
               </p>
 
               <ul className="mt-6 space-y-4 text-sm">
-                <li>
-                  <a
-                    href="#"
-                    className="text-gray-700 transition hover:opacity-75 dark:text-gray-200"
-                  >
-                    Contact
-                  </a>
-                </li>
-
-                <li>
-                  <a
-                    href="#"
-                    className="text-gray-700 transition hover:opacity-75 dark:text-gray-200"
-                  >
-                    FAQs
-                  </a>
-                </li>
-
-                <li>
-                  <a
-                    href="#"
-                    className="text-gray-700 transition hover:opacity-75 dark:text-gray-200"
-                  >
-                    Live Chat
-                  </a>
-                </li>
+                {footerNavItems.support.map((item) => (
+                  <li key={item.href}>
+                    <Link
+                      to={item.href}
+                      className="text-gray-700 transition hover:opacity-75 dark:text-gray-200"
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
 
@@ -262,41 +198,16 @@ export default function Footer() {
               <p className="font-medium text-gray-900 dark:text-white">Legal</p>
 
               <ul className="mt-6 space-y-4 text-sm">
-                <li>
-                  <a
-                    href="#"
-                    className="text-gray-700 transition hover:opacity-75 dark:text-gray-200"
-                  >
-                    Accessibility
-                  </a>
-                </li>
-
-                <li>
-                  <a
-                    href="#"
-                    className="text-gray-700 transition hover:opacity-75 dark:text-gray-200"
-                  >
-                    Returns Policy
-                  </a>
-                </li>
-
-                <li>
-                  <a
-                    href="#"
-                    className="text-gray-700 transition hover:opacity-75 dark:text-gray-200"
-                  >
-                    Refund Policy
-                  </a>
-                </li>
-
-                <li>
-                  <a
-                    href="#"
-                    className="text-gray-700 transition hover:opacity-75 dark:text-gray-200"
-                  >
-                    Hiring-3 Statistics
-                  </a>
-                </li>
+                {footerNavItems.legal.map((item) => (
+                  <li key={item.href}>
+                    <Link
+                      to={item.href}
+                      className="text-gray-700 transition hover:opacity-75 dark:text-gray-200"
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
           </div>

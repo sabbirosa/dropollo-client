@@ -1,34 +1,25 @@
 import { Button } from "@/components/ui/button";
 import {
-  NavigationMenu,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
+    NavigationMenu,
+    NavigationMenuItem,
+    NavigationMenuLink,
+    NavigationMenuList,
 } from "@/components/ui/navigation-menu";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
 } from "@/components/ui/popover";
-import { role } from "@/constant/role";
+import { navigationLinks } from "@/config/navigation";
 import {
-  authApi,
-  useLogoutMutation,
-  useUserInfoQuery,
+    authApi,
+    useLogoutMutation,
+    useUserInfoQuery,
 } from "@/redux/feature/auth/auth.api";
 import { useAppDispatch } from "@/redux/hook";
 import { Link } from "react-router";
 import Logo from "./Logo";
 import { ThemeToggler } from "./ThemeToggler";
-
-// Navigation links array to be used in both desktop and mobile menus
-const navigationLinks = [
-  { href: "/", label: "Home", role: "PUBLIC" },
-  { href: "/about", label: "About", role: "PUBLIC" },
-  { href: "/admin", label: "Admin Dashboard", role: role.ADMIN },
-  { href: "/sender", label: "Sender Dashboard", role: role.SENDER },
-  { href: "/receiver", label: "Receiver Dashboard", role: role.RECEIVER },
-];
 
 export default function Component() {
   const { data } = useUserInfoQuery(undefined);
