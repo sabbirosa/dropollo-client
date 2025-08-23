@@ -1,20 +1,21 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
+    Form,
+    FormControl,
+    FormDescription,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
 } from "@/components/ui/form";
 import PasswordInput from "@/components/ui/password-input";
 import config from "@/config";
 import { useLoginMutation } from "@/redux/feature/auth/auth.api";
+import { navigateToDashboard } from "@/utils/navigationHelpers";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -36,6 +37,7 @@ export function LoginForm({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
   const [login] = useLoginMutation();
+  const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -52,8 +54,16 @@ export function LoginForm({
     };
 
     try {
-      await login(userInfo).unwrap();
+      const response = await login(userInfo).unwrap();
       toast.success("Login successful!");
+      
+      // Navigate to dashboard based on user role
+      if (response?.data?.user?.role) {
+        navigateToDashboard(response.data.user.role, navigate);
+      } else {
+        // Fallback navigation if role is not available
+        navigate("/");
+      }
     } catch (error) {
       console.error("Login error:", error);
       toast.error("Login failed. Please check your credentials and try again.");

@@ -1,21 +1,22 @@
 import { Button } from "@/components/ui/button";
 import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
+    Form,
+    FormControl,
+    FormDescription,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import PasswordInput from "@/components/ui/password-input";
 import config from "@/config";
 import { cn } from "@/lib/utils";
 import { useRegisterMutation } from "@/redux/feature/auth/auth.api";
+import { navigateToDashboard } from "@/utils/navigationHelpers";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -42,6 +43,7 @@ export function RegistrationForm({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
   const [register] = useRegisterMutation();
+  const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof registrationSchema>>({
     resolver: zodResolver(registrationSchema),
@@ -61,8 +63,16 @@ export function RegistrationForm({
     };
 
     try {
-      await register(userInfo).unwrap();
-      toast.success("Registration successful! Please log in.");
+      const response = await register(userInfo).unwrap();
+      toast.success("Registration successful!");
+      
+      // Navigate to dashboard based on user role (registration auto-logs in)
+      if (response?.data?.role) {
+        navigateToDashboard(response.data.role, navigate);
+      } else {
+        // Fallback navigation if role is not available
+        navigate("/");
+      }
     } catch (error) {
       console.error("Registration error:", error);
       toast.error("Registration failed. Please try again.");
