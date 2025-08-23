@@ -61,8 +61,7 @@ export function RegistrationForm({
     };
 
     try {
-      const result = await register(userInfo).unwrap();
-      console.log("Registration successful:", result);
+      await register(userInfo).unwrap();
       toast.success("Registration successful! Please log in.");
     } catch (error) {
       console.error("Registration error:", error);

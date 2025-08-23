@@ -10,6 +10,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  authApi,
+  useLogoutMutation,
+  useUserInfoQuery,
+} from "@/redux/feature/auth/auth.api";
+import { useAppDispatch } from "@/redux/hook";
 import { Link } from "react-router";
 import Logo from "./Logo";
 import { ThemeToggler } from "./ThemeToggler";
@@ -21,6 +27,16 @@ const navigationLinks = [
 ];
 
 export default function Component() {
+  const { data } = useUserInfoQuery(undefined);
+
+  const [logout] = useLogoutMutation();
+  const dispatch = useAppDispatch();
+
+  const handleLogout = async () => {
+    await logout(undefined);
+    dispatch(authApi.util.resetApiState());
+  };
+
   return (
     <header className="border-b">
       <div className="mx-auto container flex h-16 items-center justify-between gap-4">
@@ -100,9 +116,20 @@ export default function Component() {
         {/* Right side */}
         <div className="flex items-center gap-2">
           <ThemeToggler />
-          <Button asChild size="sm" className="text-sm">
-            <a href="/login">Login</a>
-          </Button>
+          {data?.data?.email ? (
+            <Button
+              onClick={handleLogout}
+              variant="outline"
+              size="sm"
+              className="text-sm"
+            >
+              Logout
+            </Button>
+          ) : (
+            <Button asChild size="sm" className="text-sm">
+              <a href="/login">Login</a>
+            </Button>
+          )}
         </div>
       </div>
     </header>

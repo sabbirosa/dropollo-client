@@ -52,8 +52,7 @@ export function LoginForm({
     };
 
     try {
-      const result = await login(userInfo).unwrap();
-      console.log("Login successful:", result);
+      await login(userInfo).unwrap();
       toast.success("Login successful!");
     } catch (error) {
       console.error("Login error:", error);
