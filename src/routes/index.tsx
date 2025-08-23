@@ -1,10 +1,14 @@
 import App from "@/App";
 import DashboardLayout from "@/components/layout/DashboardLayout";
+import { role } from "@/constant/role";
 import About from "@/pages/About";
 import Login from "@/pages/Login";
 import Registration from "@/pages/Registration";
+import Unauthorized from "@/pages/Unauthorized";
+import type { TRole } from "@/types";
 import { generateRoutes } from "@/utils/generateRoutes";
-import { createBrowserRouter } from "react-router";
+import { withAuth } from "@/utils/withAuth";
+import { createBrowserRouter, Navigate } from "react-router";
 import { adminSidebarItems } from "./adminSidebarItems";
 import { receiverSidebarItems } from "./receiverSidebarItems";
 import { senderSidebarItems } from "./senderSidebarItems";
@@ -21,19 +25,37 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    Component: DashboardLayout,
+    Component: withAuth(DashboardLayout, role.ADMIN as TRole),
     path: "/admin",
-    children: [...generateRoutes(adminSidebarItems)],
+    children: [
+      {
+        index: true,
+        element: <Navigate to="/admin/analytics" />,
+      },
+      ...generateRoutes(adminSidebarItems),
+    ],
   },
   {
-    Component: DashboardLayout,
+    Component: withAuth(DashboardLayout, role.SENDER as TRole),
     path: "/sender",
-    children: [...generateRoutes(senderSidebarItems)],
+    children: [
+      {
+        index: true,
+        element: <Navigate to="/sender/create-parcel" />,
+      },
+      ...generateRoutes(senderSidebarItems),
+    ],
   },
   {
-    Component: DashboardLayout,
+    Component: withAuth(DashboardLayout, role.RECEIVER as TRole),
     path: "/receiver",
-    children: [...generateRoutes(receiverSidebarItems)],
+    children: [
+      {
+        index: true,
+        element: <Navigate to="/receiver/confirm-delivery" />,
+      },
+      ...generateRoutes(receiverSidebarItems),
+    ],
   },
   {
     Component: Login,
@@ -42,5 +64,9 @@ export const router = createBrowserRouter([
   {
     Component: Registration,
     path: "registration",
+  },
+  {
+    Component: Unauthorized,
+    path: "unauthorized",
   },
 ]);
