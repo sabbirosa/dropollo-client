@@ -13,7 +13,13 @@ export type {
   IUpdateParcel,
   IUpdateParcelStatus,
 } from "./parcel.type";
-export type { IUser, TRole } from "./user.type";
+export type {
+  IChangePasswordData,
+  IUpdateProfileData,
+  IUser,
+  IUserStats,
+  TRole,
+} from "./user.type";
 
 export interface IMeta {
   page: number;
@@ -39,6 +45,7 @@ export interface ISidebarItems {
   isActive?: boolean;
   items?: ISidebarItem[];
   component?: ComponentType;
+  showInSidebar?: boolean;
 }
 
 export interface ISidebarItem {

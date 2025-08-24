@@ -30,7 +30,7 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Navigate to="/admin/analytics" />,
+        element: <Navigate to="/admin/analytics/reports" />,
       },
       ...generateRoutes(adminSidebarItems),
     ],
@@ -41,7 +41,7 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Navigate to="/sender/create-parcel" />,
+        element: <Navigate to="/sender/my-parcels" />,
       },
       ...generateRoutes(senderSidebarItems),
     ],
@@ -52,7 +52,7 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Navigate to="/receiver/confirm-delivery" />,
+        element: <Navigate to="/receiver/incoming-parcels" />,
       },
       ...generateRoutes(receiverSidebarItems),
     ],

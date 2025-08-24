@@ -12,6 +12,7 @@ export const receiverSidebarItems: ISidebarItems[] = [
   {
     title: "Incoming Parcels",
     url: "/receiver/incoming-parcels",
+    isActive: true,
     icon: Inbox,
     items: [
       {
@@ -24,6 +25,7 @@ export const receiverSidebarItems: ISidebarItems[] = [
   {
     title: "Delivery History",
     url: "/receiver/delivery-history",
+    isActive: true,
     icon: History,
     items: [
       {
@@ -38,17 +40,20 @@ export const receiverSidebarItems: ISidebarItems[] = [
     url: "/receiver/profile",
     icon: User,
     component: Profile,
+    showInSidebar: false,
   },
   {
     title: "Account Settings",
     url: "/receiver/account",
     icon: Settings,
     component: Account,
+    showInSidebar: false,
   },
   {
     title: "Notifications",
     url: "/receiver/notifications",
     icon: Bell,
     component: Notifications,
+    showInSidebar: false,
   },
 ];

@@ -64,7 +64,7 @@ const mockNotifications: NotificationItem[] = [
 
 export default function Notifications() {
   const [notifications, setNotifications] = useState(mockNotifications);
-  const [settings, setSettings] = useState({
+  const [settings] = useState({
     emailNotifications: true,
     pushNotifications: true,
     smsNotifications: false,
@@ -120,11 +120,6 @@ export default function Notifications() {
   };
 
   const unreadCount = notifications.filter(n => !n.read).length;
-
-  const updateSetting = (key: keyof typeof settings, value: boolean) => {
-    setSettings(prev => ({ ...prev, [key]: value }));
-    toast.success("Notification settings updated");
-  };
 
   return (
     <div className="p-6 max-w-4xl mx-auto">

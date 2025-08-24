@@ -101,7 +101,7 @@ export function ProfileForm() {
     try {
       await updateProfile(data).unwrap();
       toast.success("Profile updated successfully");
-    } catch (error) {
+    } catch {
       toast.error("Failed to update profile");
     }
   };
@@ -115,7 +115,7 @@ export function ProfileForm() {
       toast.success("Password changed successfully");
       passwordForm.reset();
       setShowPasswordForm(false);
-    } catch (error) {
+    } catch {
       toast.error("Failed to change password");
     }
   };

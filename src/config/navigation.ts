@@ -15,9 +15,17 @@ export const navigationLinks = [
 
 // Additional quick action items for authenticated users
 export const quickActions = [
-  { href: "/sender/create-parcel", label: "Send Parcel", role: role.SENDER },
-  { href: "/receiver/confirm-delivery", label: "Confirm Delivery", role: role.RECEIVER },
-  { href: "/admin/analytics", label: "View Analytics", role: role.ADMIN },
+  { href: "/sender/my-parcels", label: "Send Parcel", role: role.SENDER },
+  {
+    href: "/receiver/incoming-parcels",
+    label: "Confirm Delivery",
+    role: role.RECEIVER,
+  },
+  {
+    href: "/admin/analytics/reports",
+    label: "View Analytics",
+    role: role.ADMIN,
+  },
 ];
 
 // Public footer navigation items

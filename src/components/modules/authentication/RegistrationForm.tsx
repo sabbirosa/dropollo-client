@@ -10,7 +10,20 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import PasswordInput from "@/components/ui/password-input";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectScrollDownButton,
+  SelectScrollUpButton,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import config from "@/config";
+import { role } from "@/constant/role";
 import { cn } from "@/lib/utils";
 import { useRegisterMutation } from "@/redux/feature/auth/auth.api";
 import { navigateToDashboard } from "@/utils/navigationHelpers";
@@ -24,6 +37,7 @@ const registrationSchema = z
   .object({
     name: z.string().min(2, "Name must be at least 2 characters long"),
     email: z.email("Invalid email address"),
+    role: z.enum([role.SENDER, role.RECEIVER, role.ADMIN]),
     password: z
       .string()
       .min(8, "Password must be at least 8 characters long")
@@ -50,15 +64,22 @@ export function RegistrationForm({
     defaultValues: {
       name: "",
       email: "",
+      role: role.SENDER,
       password: "",
       confirmPassword: "",
     },
   });
 
   const onSubmit = async (data: z.infer<typeof registrationSchema>) => {
-    const userInfo = {
+    const userInfo: {
+      name: string;
+      email: string;
+      role: "sender" | "receiver" | "admin";
+      password: string;
+    } = {
       name: data.name,
       email: data.email,
+      role: data.role as "sender" | "receiver" | "admin",
       password: data.password,
     };
 
@@ -118,6 +139,45 @@ export function RegistrationForm({
                   </FormControl>
                   <FormDescription className="sr-only">
                     This is your email address for registration.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="role"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Role</FormLabel>
+                  <FormControl>
+                    <Select
+                      {...field}
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      defaultValue={field.value}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select a role" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectScrollUpButton />
+                        <SelectGroup>
+                          <SelectLabel>Roles</SelectLabel>
+                          <SelectItem value={role.SENDER}>Sender</SelectItem>
+                          <SelectItem value={role.RECEIVER}>
+                            Receiver
+                          </SelectItem>
+                          <SelectItem value={role.ADMIN}>Admin</SelectItem>
+                        </SelectGroup>
+                        <SelectSeparator />
+                        <SelectScrollDownButton />
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormDescription className="sr-only">
+                    This is your password for registration.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

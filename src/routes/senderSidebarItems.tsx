@@ -12,6 +12,7 @@ export const senderSidebarItems: ISidebarItems[] = [
   {
     title: "Create Parcel",
     url: "/sender/create-parcel",
+    isActive: true,
     icon: Plus,
     items: [
       {
@@ -24,6 +25,7 @@ export const senderSidebarItems: ISidebarItems[] = [
   {
     title: "My Parcels",
     url: "/sender/my-parcels",
+    isActive: true,
     icon: Package,
     items: [
       {
@@ -38,17 +40,20 @@ export const senderSidebarItems: ISidebarItems[] = [
     url: "/sender/profile",
     icon: User,
     component: Profile,
+    showInSidebar: false,
   },
   {
     title: "Account Settings",
     url: "/sender/account",
     icon: Settings,
     component: Account,
+    showInSidebar: false,
   },
   {
     title: "Notifications",
     url: "/sender/notifications",
     icon: Bell,
     component: Notifications,
+    showInSidebar: false,
   },
 ];

@@ -1,3 +1,4 @@
+import { ParcelStatus } from "@/types/parcel.type";
 import { useCallback, useMemo } from "react";
 import { useSearchParams } from "react-router";
 
@@ -6,7 +7,16 @@ export interface TableQueryParams {
   limit: number;
   search?: string;
   sort?: string;
-  [key: string]: any;
+  status?: ParcelStatus;
+  userStatus?: string; // For user-specific status like "blocked"
+  role?: string;
+  urgency?: "standard" | "express" | "urgent";
+  trackingId?: string;
+  receiverEmail?: string;
+  startDate?: string;
+  endDate?: string;
+  isBlocked?: boolean;
+  [key: string]: string | number | boolean | ParcelStatus | "standard" | "express" | "urgent" | undefined;
 }
 
 export interface UseTableQueryReturn {
@@ -16,7 +26,7 @@ export interface UseTableQueryReturn {
   setPage: (page: number) => void;
   setSearch: (search: string) => void;
   setSort: (sort: string) => void;
-  setFilter: (key: string, value: any) => void;
+  setFilter: (key: string, value: string | number | boolean | undefined) => void;
   removeFilter: (key: string) => void;
 }
 
@@ -24,7 +34,7 @@ interface UseTableQueryOptions {
   defaultPage?: number;
   defaultLimit?: number;
   defaultSort?: string;
-  defaultFilters?: Record<string, any>;
+  defaultFilters?: Record<string, string | number | boolean>;
 }
 
 export function useTableQuery(
@@ -98,7 +108,7 @@ export function useTableQuery(
       });
 
       // Reset page to 1 when filters change (except when explicitly setting page)
-      if (!updates.hasOwnProperty("page") && Object.keys(updates).length > 0) {
+      if (!Object.prototype.hasOwnProperty.call(updates, "page") && Object.keys(updates).length > 0) {
         newParams.set("page", "1");
       }
 
@@ -145,7 +155,7 @@ export function useTableQuery(
   );
 
   const setFilter = useCallback(
-    (key: string, value: any) => {
+    (key: string, value: string | number | boolean | undefined) => {
       updateQuery({ [key]: value });
     },
     [updateQuery]

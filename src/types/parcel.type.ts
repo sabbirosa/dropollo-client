@@ -72,7 +72,12 @@ export interface IPricing {
 export interface IParcel {
   _id: string;
   trackingId: string;
-  sender: string;
+  sender: {
+    _id: string;
+    name: string;
+    email: string;
+    phone?: string;
+  };
   receiver: IParcelReceiver;
   parcelDetails: IParcelDetails;
   deliveryInfo: IDeliveryInfo;

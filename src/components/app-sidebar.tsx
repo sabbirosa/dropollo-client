@@ -22,13 +22,19 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const isOpen = isMobile ? openMobile : open;
 
   const { data: userData } = useUserInfoQuery(undefined);
+  
+  // Only render sidebar content when user data is available
+  if (!userData?.data) {
+    return null;
+  }
+
   const data = {
     user: {
-      name: userData?.data.name,
-      email: userData?.data.email,
-      avatar: userData?.data.avatar,
+      name: userData.data.name || "User",
+      email: userData.data.email || "user@example.com",
+      avatar: userData.data.avatar || "",
     },
-    navMain: getSidebarItems(userData?.data.role),
+    navMain: getSidebarItems(userData.data.role),
   };
 
   return (

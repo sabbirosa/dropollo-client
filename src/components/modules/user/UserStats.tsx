@@ -31,7 +31,7 @@ export function UserStats() {
         <h3 className="font-semibold mb-2">Failed to load user statistics</h3>
         <p className="text-sm">
           {error && typeof error === 'object' && 'status' in error 
-            ? `Error ${(error as any).status}: ${(error as any).data?.message || 'Unknown error'}`
+            ? `Error ${(error as { status: number }).status}: ${(error as { data?: { message?: string } }).data?.message || 'Unknown error'}`
             : 'Please try again or check your connection.'}
         </p>
       </div>

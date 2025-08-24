@@ -1,9 +1,19 @@
 import { baseApi } from "@/redux/baseApi";
+import type { IResponse, IUser, IUserStats, IUpdateProfileData, IChangePasswordData } from "@/types";
+
+interface UserQueryParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  role?: string;
+  status?: string;
+  sort?: string;
+}
 
 export const userApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     // Admin-only endpoints
-    getAllUsers: builder.query({
+    getAllUsers: builder.query<IResponse<IUser[]>, UserQueryParams>({
       query: (params) => ({
         url: "/user",
         method: "GET",
@@ -12,7 +22,7 @@ export const userApi = baseApi.injectEndpoints({
       providesTags: ["USER"],
     }),
 
-    getUserById: builder.query({
+    getUserById: builder.query<IResponse<IUser>, string>({
       query: (id) => ({
         url: `/user/${id}`,
         method: "GET",
@@ -20,7 +30,7 @@ export const userApi = baseApi.injectEndpoints({
       providesTags: ["USER"],
     }),
 
-    getUserStats: builder.query({
+    getUserStats: builder.query<IResponse<IUserStats>, void>({
       query: () => ({
         url: "/user/stats",
         method: "GET",
@@ -28,7 +38,7 @@ export const userApi = baseApi.injectEndpoints({
       providesTags: ["USER"],
     }),
 
-    updateUserRole: builder.mutation({
+    updateUserRole: builder.mutation<IResponse<IUser>, { id: string; role: string }>({
       query: ({ id, role }) => ({
         url: `/user/${id}/role`,
         method: "PUT",
@@ -37,7 +47,7 @@ export const userApi = baseApi.injectEndpoints({
       invalidatesTags: ["USER"],
     }),
 
-    blockUnblockUser: builder.mutation({
+    blockUnblockUser: builder.mutation<IResponse<IUser>, { id: string; isBlocked: boolean; reason?: string }>({
       query: ({ id, isBlocked, reason }) => ({
         url: `/user/${id}/block`,
         method: "PUT",
@@ -46,7 +56,7 @@ export const userApi = baseApi.injectEndpoints({
       invalidatesTags: ["USER"],
     }),
 
-    deleteUser: builder.mutation({
+    deleteUser: builder.mutation<IResponse<{ message: string }>, string>({
       query: (id) => ({
         url: `/user/${id}`,
         method: "DELETE",
@@ -55,7 +65,7 @@ export const userApi = baseApi.injectEndpoints({
     }),
 
     // User profile endpoints (for all authenticated users)
-    getMyProfile: builder.query({
+    getMyProfile: builder.query<IResponse<IUser>, void>({
       query: () => ({
         url: "/user/profile/me",
         method: "GET",
@@ -63,7 +73,7 @@ export const userApi = baseApi.injectEndpoints({
       providesTags: ["USER"],
     }),
 
-    updateMyProfile: builder.mutation({
+    updateMyProfile: builder.mutation<IResponse<IUser>, IUpdateProfileData>({
       query: (profileData) => ({
         url: "/user/profile/update",
         method: "PUT",
@@ -73,7 +83,7 @@ export const userApi = baseApi.injectEndpoints({
     }),
 
     // Auth profile endpoints (alternative endpoints from auth module)
-    updateAuthProfile: builder.mutation({
+    updateAuthProfile: builder.mutation<IResponse<IUser>, IUpdateProfileData>({
       query: (profileData) => ({
         url: "/auth/profile",
         method: "PUT",
@@ -82,7 +92,7 @@ export const userApi = baseApi.injectEndpoints({
       invalidatesTags: ["USER"],
     }),
 
-    changePassword: builder.mutation({
+    changePassword: builder.mutation<IResponse<{ message: string }>, IChangePasswordData>({
       query: ({ currentPassword, newPassword }) => ({
         url: "/auth/change-password",
         method: "PUT",

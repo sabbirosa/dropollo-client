@@ -1,5 +1,12 @@
 import type { ISidebarItems } from "@/types";
-import { Bell, Package, Settings, SquareTerminal, User, Users } from "lucide-react";
+import {
+  Bell,
+  Package,
+  Settings,
+  SquareTerminal,
+  User,
+  Users,
+} from "lucide-react";
 import { lazy } from "react";
 
 const Analytics = lazy(() => import("@/pages/Admin/Analytics"));
@@ -16,6 +23,7 @@ export const adminSidebarItems: ISidebarItems[] = [
     url: "/admin/analytics",
     icon: SquareTerminal,
     component: Analytics,
+    isActive: true,
     items: [
       {
         title: "Reports",
@@ -27,6 +35,7 @@ export const adminSidebarItems: ISidebarItems[] = [
   {
     title: "User Management",
     url: "/admin/user-management",
+    isActive: true,
     icon: Users,
     items: [
       {
@@ -39,6 +48,7 @@ export const adminSidebarItems: ISidebarItems[] = [
   {
     title: "Parcel Management",
     url: "/admin/parcel-management",
+    isActive: true,
     icon: Package,
     items: [
       {
@@ -53,17 +63,20 @@ export const adminSidebarItems: ISidebarItems[] = [
     url: "/admin/profile",
     icon: User,
     component: Profile,
+    showInSidebar: false,
   },
   {
     title: "Account Settings",
     url: "/admin/account",
     icon: Settings,
     component: Account,
+    showInSidebar: false,
   },
   {
     title: "Notifications",
     url: "/admin/notifications",
     icon: Bell,
     component: Notifications,
+    showInSidebar: false,
   },
 ];

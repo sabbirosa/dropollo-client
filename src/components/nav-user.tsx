@@ -50,10 +50,10 @@ export function NavUser({
 
   const handleLogout = async () => {
     try {
-      await logout({}).unwrap();
+      await logout().unwrap();
       toast.success("Logged out successfully");
       navigate("/login");
-    } catch (error) {
+    } catch {
       toast.error("Logout failed");
     }
   };

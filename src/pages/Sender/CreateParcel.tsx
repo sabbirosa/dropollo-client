@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Card,
   CardContent,
@@ -8,6 +9,11 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -20,10 +26,12 @@ import { useCreateParcelMutation } from "@/redux/feature/parcel/parcel.api";
 import type { ICreateParcel } from "@/types";
 import { calculateParcelFees, formatCurrency } from "@/utils/parcelUtils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
 
 const createParcelSchema = z.object({
   receiver: z.object({
@@ -60,7 +68,12 @@ type CreateParcelFormData = z.infer<typeof createParcelSchema>;
 
 export default function CreateParcel() {
   const [createParcel, { isLoading }] = useCreateParcelMutation();
-  const [calculatedFees, setCalculatedFees] = useState<any>(null);
+  const [calculatedFees, setCalculatedFees] = useState<{
+    baseFee: number;
+    weightFee: number;
+    urgencyFee: number;
+    totalFee: number;
+  } | null>(null);
 
   const {
     register,
@@ -84,9 +97,10 @@ export default function CreateParcel() {
   const watchedWeight = watch("parcelDetails.weight");
   const watchedType = watch("parcelDetails.type");
   const watchedUrgency = watch("deliveryInfo.urgency");
+  const watchedPreferredDate = watch("deliveryInfo.preferredDeliveryDate");
 
   // Calculate fees when weight, type, or urgency changes
-  const updateFees = () => {
+  const updateFees = useCallback(() => {
     if (watchedWeight && watchedType && watchedUrgency) {
       const fees = calculateParcelFees(
         watchedWeight,
@@ -95,12 +109,12 @@ export default function CreateParcel() {
       );
       setCalculatedFees(fees);
     }
-  };
+  }, [watchedWeight, watchedType, watchedUrgency]);
 
   // Update fees when dependencies change
   React.useEffect(() => {
     updateFees();
-  }, [watchedWeight, watchedType, watchedUrgency]);
+  }, [updateFees]);
 
   const onSubmit = async (data: CreateParcelFormData) => {
     try {
@@ -160,7 +174,7 @@ export default function CreateParcel() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
+              <div className="space-y-2">
                 <Label htmlFor="receiver.name">Full Name</Label>
                 <Input
                   id="receiver.name"
@@ -173,7 +187,7 @@ export default function CreateParcel() {
                   </p>
                 )}
               </div>
-              <div>
+              <div className="space-y-2">
                 <Label htmlFor="receiver.email">Email</Label>
                 <Input
                   id="receiver.email"
@@ -187,7 +201,7 @@ export default function CreateParcel() {
                   </p>
                 )}
               </div>
-              <div>
+              <div className="space-y-2">
                 <Label htmlFor="receiver.phone">Phone</Label>
                 <Input
                   id="receiver.phone"
@@ -203,7 +217,7 @@ export default function CreateParcel() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
+              <div className="space-y-2">
                 <Label htmlFor="receiver.address.street">Street Address</Label>
                 <Input
                   id="receiver.address.street"
@@ -216,7 +230,7 @@ export default function CreateParcel() {
                   </p>
                 )}
               </div>
-              <div>
+              <div className="space-y-2">
                 <Label htmlFor="receiver.address.city">City</Label>
                 <Input
                   id="receiver.address.city"
@@ -229,7 +243,7 @@ export default function CreateParcel() {
                   </p>
                 )}
               </div>
-              <div>
+              <div className="space-y-2">
                 <Label htmlFor="receiver.address.state">State/Province</Label>
                 <Input
                   id="receiver.address.state"
@@ -242,7 +256,7 @@ export default function CreateParcel() {
                   </p>
                 )}
               </div>
-              <div>
+              <div className="space-y-2">
                 <Label htmlFor="receiver.address.zipCode">ZIP Code</Label>
                 <Input
                   id="receiver.address.zipCode"
@@ -255,7 +269,7 @@ export default function CreateParcel() {
                   </p>
                 )}
               </div>
-              <div>
+              <div className="space-y-2">
                 <Label htmlFor="receiver.address.country">Country</Label>
                 <Input
                   id="receiver.address.country"
@@ -282,11 +296,11 @@ export default function CreateParcel() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
+              <div className="space-y-2">
                 <Label htmlFor="parcelDetails.type">Parcel Type</Label>
                 <Select
                   onValueChange={(value) =>
-                    setValue("parcelDetails.type", value as any)
+                    setValue("parcelDetails.type", value as "document" | "package" | "fragile" | "electronics" | "other")
                   }
                   defaultValue="package"
                 >
@@ -302,7 +316,7 @@ export default function CreateParcel() {
                   </SelectContent>
                 </Select>
               </div>
-              <div>
+              <div className="space-y-2">
                 <Label htmlFor="parcelDetails.weight">Weight (kg)</Label>
                 <Input
                   id="parcelDetails.weight"
@@ -318,11 +332,11 @@ export default function CreateParcel() {
                   </p>
                 )}
               </div>
-              <div>
+              <div className="space-y-2">
                 <Label htmlFor="deliveryInfo.urgency">Urgency</Label>
                 <Select
                   onValueChange={(value) =>
-                    setValue("deliveryInfo.urgency", value as any)
+                    setValue("deliveryInfo.urgency", value as "standard" | "express" | "urgent")
                   }
                   defaultValue="standard"
                 >
@@ -339,7 +353,7 @@ export default function CreateParcel() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
+              <div className="space-y-2">
                 <Label htmlFor="parcelDetails.length">Length (cm)</Label>
                 <Input
                   id="parcelDetails.length"
@@ -349,7 +363,7 @@ export default function CreateParcel() {
                   placeholder="30"
                 />
               </div>
-              <div>
+              <div className="space-y-2">
                 <Label htmlFor="parcelDetails.width">Width (cm)</Label>
                 <Input
                   id="parcelDetails.width"
@@ -359,7 +373,7 @@ export default function CreateParcel() {
                   placeholder="20"
                 />
               </div>
-              <div>
+              <div className="space-y-2">
                 <Label htmlFor="parcelDetails.height">Height (cm)</Label>
                 <Input
                   id="parcelDetails.height"
@@ -371,7 +385,7 @@ export default function CreateParcel() {
               </div>
             </div>
 
-            <div>
+            <div className="space-y-2">
               <Label htmlFor="parcelDetails.description">Description</Label>
               <Textarea
                 id="parcelDetails.description"
@@ -386,15 +400,21 @@ export default function CreateParcel() {
               )}
             </div>
 
-            <div>
+            <div className="space-y-2">
               <Label htmlFor="parcelDetails.value">Declared Value (BDT)</Label>
               <Input
                 id="parcelDetails.value"
                 type="number"
                 min="0"
+                step="0.01"
                 {...register("parcelDetails.value", { valueAsNumber: true })}
-                placeholder="1000"
+                placeholder="1000.00"
               />
+              {errors.parcelDetails?.value && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.parcelDetails.value.message}
+                </p>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -409,18 +429,43 @@ export default function CreateParcel() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
+              <div className="space-y-2">
                 <Label htmlFor="deliveryInfo.preferredDeliveryDate">
                   Preferred Delivery Date
                 </Label>
-                <Input
-                  id="deliveryInfo.preferredDeliveryDate"
-                  type="date"
-                  {...register("deliveryInfo.preferredDeliveryDate")}
-                />
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant={"outline"}
+                      className={`w-[240px] justify-start text-left font-normal ${
+                        !watchedPreferredDate
+                          ? "text-muted-foreground"
+                          : ""
+                      }`}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {watchedPreferredDate ? (
+                        format(new Date(watchedPreferredDate), "PPP")
+                      ) : (
+                        <span>Pick a date</span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={watchedPreferredDate ? new Date(watchedPreferredDate) : undefined}
+                      onSelect={(date) => {
+                        const formattedDate = date ? format(date, "yyyy-MM-dd") : undefined;
+                        setValue("deliveryInfo.preferredDeliveryDate", formattedDate);
+                      }}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
               </div>
             </div>
-            <div>
+            <div className="space-y-2">
               <Label htmlFor="deliveryInfo.deliveryInstructions">
                 Delivery Instructions
               </Label>
