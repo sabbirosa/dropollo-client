@@ -3,19 +3,22 @@ import { LoginForm } from "@/components/modules/authentication/LoginForm";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useUserInfoQuery } from "@/redux/feature/auth/auth.api";
-import { navigateToDashboard } from "@/utils/navigationHelpers";
+import { getDashboardRoute } from "@/utils/navigationHelpers";
 import { ArrowLeft } from "lucide-react";
-import { Link, useNavigate } from "react-router";
+import { Link, Navigate } from "react-router";
 
 export default function Login() {
-  const { data, isLoading } = useUserInfoQuery(undefined);
-  const navigate = useNavigate();
+  const { data, isLoading, error } = useUserInfoQuery(undefined, {
+    // Skip the query if we're on the login page to avoid unnecessary API calls
+    refetchOnMountOrArgChange: false,
+    refetchOnFocus: false,
+  });
 
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-6">
         <div className="w-full max-w-md space-y-6">
-                    {/* Header Skeleton */}
+          {/* Header Skeleton */}
           <div className="text-center space-y-2">
             <Skeleton className="h-8 w-32 mx-auto bg-gray-200 dark:bg-gray-700" />
             <Skeleton className="h-4 w-48 mx-auto bg-gray-200 dark:bg-gray-700" />
@@ -36,8 +39,11 @@ export default function Login() {
     );
   }
 
-  if (data?.data?.role && !isLoading) {
-    navigateToDashboard(data?.data?.role, navigate);
+  // If user is already authenticated and has valid data, redirect to their role-based dashboard
+  // Also check if the data is fresh (not stale cache)
+  if (data?.data?.role && data?.data?._id && !isLoading && !error) {
+    const dashboardRoute = getDashboardRoute(data.data.role);
+    return <Navigate to={dashboardRoute} replace />;
   }
 
   return (

@@ -1,22 +1,25 @@
-import { role } from "@/constant/role";
+import type { TRole } from "@/types";
 
-export const getDashboardUrl = (userRole: string): string => {
-  switch (userRole) {
-    case role.ADMIN:
+/**
+ * Maps user role to their respective dashboard route
+ */
+export const getDashboardRoute = (role: TRole): string => {
+  switch (role) {
+    case "admin":
       return "/admin";
-    case role.SENDER:
+    case "sender":
       return "/sender";
-    case role.RECEIVER:
+    case "receiver":
       return "/receiver";
     default:
       return "/";
   }
 };
 
-export const navigateToDashboard = (
-  userRole: string,
-  navigate: (path: string) => void
-): void => {
-  const dashboardUrl = getDashboardUrl(userRole);
-  navigate(dashboardUrl);
-};
+// export const navigateToDashboard = (
+//   userRole: string,
+//   navigate: (path: string) => void
+// ): void => {
+//   const dashboardUrl = getDashboardRoute(userRole as TRole);
+//   navigate(dashboardUrl);
+// };

@@ -12,7 +12,10 @@ import type {
 export const parcelApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     trackParcel: builder.query<IParcel, string>({
-      query: (trackingId) => `/parcel/track/${trackingId}`,
+      query: (trackingId) => ({
+        url: `/parcel/track/${trackingId}`,
+        method: "GET",
+      }),
       providesTags: ["PARCEL"],
     }),
 
@@ -20,13 +23,16 @@ export const parcelApi = baseApi.injectEndpoints({
       query: (body) => ({
         url: "/parcel",
         method: "POST",
-        body,
+        data: body,
       }),
 
       invalidatesTags: ["PARCEL"],
     }),
 
-    getMySentParcels: builder.query<IResponse<IParcel[]>, Partial<IParcelFilters>>({
+    getMySentParcels: builder.query<
+      IResponse<IParcel[]>,
+      Partial<IParcelFilters>
+    >({
       query: (params) => ({ url: "/parcel/my-sent", params }),
       providesTags: ["PARCEL"],
     }),
@@ -38,7 +44,7 @@ export const parcelApi = baseApi.injectEndpoints({
       query: ({ id, data }) => ({
         url: `/parcel/${id}`,
         method: "PUT",
-        body: data,
+        data: data,
       }),
       invalidatesTags: ["PARCEL"],
     }),
@@ -47,7 +53,7 @@ export const parcelApi = baseApi.injectEndpoints({
       query: ({ id, reason }) => ({
         url: `/parcel/${id}/cancel`,
         method: "DELETE",
-        body: { reason },
+        data: { reason },
       }),
       invalidatesTags: ["PARCEL"],
     }),
@@ -65,23 +71,26 @@ export const parcelApi = baseApi.injectEndpoints({
       query: ({ id, note }) => ({
         url: `/parcel/${id}/confirm-delivery`,
         method: "PUT",
-        body: { note },
+        data: { note },
       }),
       invalidatesTags: ["PARCEL"],
     }),
 
-    getDeliveryHistory: builder.query<IResponse<IParcel[]>, Partial<IParcelFilters>>(
+    getDeliveryHistory: builder.query<
+      IResponse<IParcel[]>,
+      Partial<IParcelFilters>
+    >({
+      query: (params) => ({ url: "/parcel/delivery-history", params }),
+      providesTags: ["PARCEL"],
+    }),
+
+    // -------- Admin --------
+    getAllParcels: builder.query<IResponse<IParcel[]>, Partial<IParcelFilters>>(
       {
-        query: (params) => ({ url: "/parcel/delivery-history", params }),
+        query: (params) => ({ url: "/parcel", params }),
         providesTags: ["PARCEL"],
       }
     ),
-
-    // -------- Admin --------
-    getAllParcels: builder.query<IResponse<IParcel[]>, Partial<IParcelFilters>>({
-      query: (params) => ({ url: "/parcel", params }),
-      providesTags: ["PARCEL"],
-    }),
 
     updateParcelStatus: builder.mutation<
       IParcel,
@@ -90,7 +99,7 @@ export const parcelApi = baseApi.injectEndpoints({
       query: ({ id, data }) => ({
         url: `/parcel/${id}/status`,
         method: "PUT",
-        body: data,
+        data: data,
       }),
       invalidatesTags: ["PARCEL"],
     }),
@@ -102,15 +111,15 @@ export const parcelApi = baseApi.injectEndpoints({
       query: ({ id, isBlocked, reason }) => ({
         url: `/parcel/${id}/block`,
         method: "PUT",
-        body: { isBlocked, reason },
+        data: { isBlocked, reason },
       }),
       invalidatesTags: ["PARCEL"],
     }),
 
     assignDeliveryPersonnel: builder.mutation<
       IParcel,
-      { 
-        id: string; 
+      {
+        id: string;
         deliveryPersonnel: {
           name: string;
           email: string;
@@ -127,7 +136,7 @@ export const parcelApi = baseApi.injectEndpoints({
       query: ({ id, deliveryPersonnel, note }) => ({
         url: `/parcel/${id}/assign`,
         method: "PUT",
-        body: { deliveryPersonnel, note },
+        data: { deliveryPersonnel, note },
       }),
       invalidatesTags: ["PARCEL"],
     }),
@@ -141,13 +150,19 @@ export const parcelApi = baseApi.injectEndpoints({
     }),
 
     getParcelStats: builder.query<IResponse<IParcelStats>, void>({
-      query: () => "/parcel/stats",
+      query: () => ({
+        url: "/parcel/stats",
+        method: "GET",
+      }),
       providesTags: ["PARCEL"],
     }),
 
     // -------- Shared --------
     getParcelById: builder.query<IParcel, string>({
-      query: (id) => `/parcel/${id}`,
+      query: (id) => ({
+        url: `/parcel/${id}`,
+        method: "GET",
+      }),
       providesTags: ["PARCEL"],
     }),
 
@@ -155,7 +170,10 @@ export const parcelApi = baseApi.injectEndpoints({
       { status: string; updatedAt: string; note?: string }[],
       string
     >({
-      query: (id) => `/parcel/${id}/status-history`,
+      query: (id) => ({
+        url: `/parcel/${id}/status-history`,
+        method: "GET",
+      }),
       providesTags: ["PARCEL"],
     }),
   }),

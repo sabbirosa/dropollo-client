@@ -26,7 +26,8 @@ import config from "@/config";
 import { role } from "@/constant/role";
 import { cn } from "@/lib/utils";
 import { useRegisterMutation } from "@/redux/feature/auth/auth.api";
-import { navigateToDashboard } from "@/utils/navigationHelpers";
+import { getDashboardRoute } from "@/utils/navigationHelpers";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router";
@@ -89,7 +90,8 @@ export function RegistrationForm({
 
       // Navigate to dashboard based on user role (registration auto-logs in)
       if (response?.data?.role && !isLoading) {
-        navigateToDashboard(response.data.role, navigate);
+        const dashboardRoute = getDashboardRoute(response.data.role);
+        navigate(dashboardRoute);
       } else {
         // Fallback navigation if role is not available
         navigate("/");

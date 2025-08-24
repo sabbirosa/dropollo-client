@@ -15,7 +15,7 @@ import {
 import PasswordInput from "@/components/ui/password-input";
 import config from "@/config";
 import { useLoginMutation } from "@/redux/feature/auth/auth.api";
-import { navigateToDashboard } from "@/utils/navigationHelpers";
+import { getDashboardRoute } from "@/utils/navigationHelpers";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -36,7 +36,7 @@ export function LoginForm({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
-  const [login, isLoading] = useLoginMutation();
+  const [login, { isLoading }] = useLoginMutation();
   const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof loginSchema>>({
@@ -59,7 +59,8 @@ export function LoginForm({
 
       // Navigate to dashboard based on user role
       if (response?.data?.user?.role && !isLoading) {
-        navigateToDashboard(response.data.user.role, navigate);
+        const dashboardRoute = getDashboardRoute(response.data.user.role);
+        navigate(dashboardRoute);
       } else {
         // Fallback navigation if role is not available
         navigate("/");

@@ -20,7 +20,7 @@ export const authApi = baseApi.injectEndpoints({
       query: (userData) => ({
         url: "/auth/register",
         method: "POST",
-        body: userData,
+        data: userData,
       }),
     }),
 
@@ -28,7 +28,7 @@ export const authApi = baseApi.injectEndpoints({
       query: (userData) => ({
         url: "/auth/login",
         method: "POST",
-        body: userData,
+        data: userData,
       }),
     }),
 
@@ -37,7 +37,15 @@ export const authApi = baseApi.injectEndpoints({
         url: "/auth/logout",
         method: "POST",
       }),
-      invalidatesTags: ["USER"],
+      invalidatesTags: ["USER", "PARCEL"],
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          dispatch(baseApi.util.resetApiState());
+        } catch {
+          dispatch(baseApi.util.resetApiState());
+        }
+      },
     }),
 
     userInfo: builder.query<IResponse<IUser>, void>({

@@ -2,61 +2,61 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
 } from "@/components/ui/popover";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import { useTableQuery } from "@/hooks/useTableQuery";
 import { useGetDeliveryHistoryQuery } from "@/redux/feature/parcel/parcel.api";
 import { ParcelStatus } from "@/types/parcel.type";
 import {
-    formatCurrency,
-    formatDate,
-    getStatusColor,
-    getStatusText,
-    getUrgencyColor,
+  formatCurrency,
+  formatDate,
+  getStatusColor,
+  getStatusText,
+  getUrgencyColor,
 } from "@/utils/parcelUtils";
 import { format } from "date-fns";
 import {
-    CalendarIcon,
-    CheckCircle,
-    Eye,
-    Filter,
-    Package,
-    TrendingUp,
+  CalendarIcon,
+  CheckCircle,
+  Eye,
+  Filter,
+  Package,
+  TrendingUp,
 } from "lucide-react";
 
 export default function DeliveryHistory() {
@@ -72,8 +72,8 @@ export default function DeliveryHistory() {
     defaultPage: 1,
   });
 
-  const { data: parcelsData, isLoading } = useGetDeliveryHistoryQuery(queryParams);
-  console.log(parcelsData);
+  const { data: parcelsData, isLoading } =
+    useGetDeliveryHistoryQuery(queryParams);
 
   const handleFilterChange = (key: string, value: string) => {
     if (value === "all" || value === "") {
@@ -90,9 +90,10 @@ export default function DeliveryHistory() {
   const parcels = parcelsData?.data || [];
   const totalPages = parcelsData?.meta?.totalPage || 1;
   const currentPage = queryParams.page;
-  const hasFilters = queryParams.search || 
-    Object.keys(queryParams).some(key => 
-      !['page', 'limit'].includes(key) && queryParams[key]
+  const hasFilters =
+    queryParams.search ||
+    Object.keys(queryParams).some(
+      (key) => !["page", "limit"].includes(key) && queryParams[key]
     );
 
   // Calculate statistics
@@ -294,17 +295,27 @@ export default function DeliveryHistory() {
                   <Button
                     variant="outline"
                     className={`w-full justify-start text-left font-normal ${
-                      queryParams.startDate ? "text-gray-900 dark:text-gray-100" : "text-gray-500 dark:text-gray-400"
+                      queryParams.startDate
+                        ? "text-gray-900 dark:text-gray-100"
+                        : "text-gray-500 dark:text-gray-400"
                     }`}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {queryParams.startDate ? format(new Date(queryParams.startDate), "PPP") : <span>Pick a start date</span>}
+                    {queryParams.startDate ? (
+                      format(new Date(queryParams.startDate), "PPP")
+                    ) : (
+                      <span>Pick a start date</span>
+                    )}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
                   <Calendar
                     mode="single"
-                    selected={queryParams.startDate ? new Date(queryParams.startDate) : undefined}
+                    selected={
+                      queryParams.startDate
+                        ? new Date(queryParams.startDate)
+                        : undefined
+                    }
                     onSelect={(date) => {
                       if (date) {
                         handleFilterChange("startDate", date.toISOString());
@@ -330,17 +341,27 @@ export default function DeliveryHistory() {
                   <Button
                     variant="outline"
                     className={`w-full justify-start text-left font-normal ${
-                      queryParams.endDate ? "text-gray-900 dark:text-gray-100" : "text-gray-500 dark:text-gray-400"
+                      queryParams.endDate
+                        ? "text-gray-900 dark:text-gray-100"
+                        : "text-gray-500 dark:text-gray-400"
                     }`}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {queryParams.endDate ? format(new Date(queryParams.endDate), "PPP") : <span>Pick an end date</span>}
+                    {queryParams.endDate ? (
+                      format(new Date(queryParams.endDate), "PPP")
+                    ) : (
+                      <span>Pick an end date</span>
+                    )}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
                   <Calendar
                     mode="single"
-                    selected={queryParams.endDate ? new Date(queryParams.endDate) : undefined}
+                    selected={
+                      queryParams.endDate
+                        ? new Date(queryParams.endDate)
+                        : undefined
+                    }
                     onSelect={(date) => {
                       if (date) {
                         handleFilterChange("endDate", date.toISOString());

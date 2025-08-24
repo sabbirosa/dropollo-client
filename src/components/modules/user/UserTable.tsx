@@ -1,54 +1,68 @@
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
 } from "@/components/ui/card";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
 } from "@/components/ui/popover";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from "@/components/ui/table";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useTableQuery } from "@/hooks/useTableQuery";
-import { useGetAllUsersQuery, useUpdateUserRoleMutation, useBlockUnblockUserMutation, useDeleteUserMutation } from "@/redux/feature/user/user.api";
+import {
+    useBlockUnblockUserMutation,
+    useDeleteUserMutation,
+    useGetAllUsersQuery,
+    useUpdateUserRoleMutation,
+} from "@/redux/feature/user/user.api";
 import type { IUser, TRole } from "@/types";
-import { CalendarIcon, Filter, Shield, Trash2, Eye, UserCog, ChevronLeft, ChevronRight } from "lucide-react";
+import { format } from "date-fns";
+import {
+    CalendarIcon,
+    ChevronLeft,
+    ChevronRight,
+    Eye,
+    Filter,
+    Shield,
+    Trash2,
+    UserCog,
+} from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { format } from "date-fns";
 import { UserModal } from "./";
 import { RoleSelectionModal } from "./RoleSelectionModal";
 
@@ -59,7 +73,9 @@ export function UserTable() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState<IUser | null>(null);
   const [userToChangeRole, setUserToChangeRole] = useState<IUser | null>(null);
-  const [userToBlockUnblock, setUserToBlockUnblock] = useState<IUser | null>(null);
+  const [userToBlockUnblock, setUserToBlockUnblock] = useState<IUser | null>(
+    null
+  );
   const [blockDialogOpen, setBlockDialogOpen] = useState(false);
 
   // Use query string for table state
@@ -78,7 +94,10 @@ export function UserTable() {
     ...(queryParams.search && { search: queryParams.search }),
     ...(queryParams.role !== "all" && { role: queryParams.role }),
     ...(queryParams.userStatus !== "all" && {
-      isBlocked: queryParams.userStatus === "blocked",
+      ...(queryParams.userStatus === "blocked" && { isBlocked: true }),
+      ...(queryParams.userStatus === "active" && { status: "active", isVerified: true }),
+      ...(queryParams.userStatus === "inactive" && { status: "inactive" }),
+      ...(queryParams.userStatus === "pending" && { isVerified: false }),
     }),
     ...(queryParams.startDate && { startDate: queryParams.startDate }),
     ...(queryParams.endDate && { endDate: queryParams.endDate }),
@@ -152,6 +171,32 @@ export function UserTable() {
     }
   };
 
+  const getUserStatus = (user: IUser) => {
+    if (user.isDeleted) return "deleted";
+    if (user.isBlocked) return "blocked";
+    if (user.status === "active" && user.isVerified) return "active";
+    if (user.status === "inactive") return "inactive";
+    if (!user.isVerified) return "pending";
+    return "unknown";
+  };
+
+  const getStatusBadgeColor = (status: string) => {
+    switch (status) {
+      case "active":
+        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300";
+      case "pending":
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300";
+      case "inactive":
+        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300";
+      case "blocked":
+        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300";
+      case "deleted":
+        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300";
+      default:
+        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300";
+    }
+  };
+
   const getRoleBadgeColor = (role: TRole) => {
     switch (role) {
       case "admin":
@@ -177,12 +222,12 @@ export function UserTable() {
           <div className="text-center text-red-600">
             <h3 className="font-semibold mb-2">Failed to load users</h3>
             <p className="text-sm">
-              {error && typeof error === 'object' && 'status' in error 
-                ? `Error ${(error as { status: number }).status}: ${(error as { data?: { message?: string } }).data?.message || 'Unknown error'}`
-                : 'Please try again or check your connection.'}
+              {error && typeof error === "object" && "status" in error
+                ? `Error ${(error as { status: number }).status}: ${(error as { data?: { message?: string } }).data?.message || "Unknown error"}`
+                : "Please try again or check your connection."}
             </p>
-            <Button 
-              onClick={() => window.location.reload()} 
+            <Button
+              onClick={() => window.location.reload()}
               className="mt-4"
               size="sm"
             >
@@ -207,7 +252,10 @@ export function UserTable() {
         </CardHeader>
         <CardContent>
           <div className="mb-6">
-            <Label htmlFor="globalSearch" className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+            <Label
+              htmlFor="globalSearch"
+              className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
               Search
             </Label>
             <Input
@@ -220,7 +268,10 @@ export function UserTable() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="role" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <Label
+                htmlFor="role"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              >
                 Role
               </Label>
               <Select
@@ -240,12 +291,17 @@ export function UserTable() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="userStatus" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <Label
+                htmlFor="userStatus"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              >
                 Status
               </Label>
               <Select
                 value={queryParams.userStatus || "all"}
-                onValueChange={(value) => handleFilterChange("userStatus", value)}
+                onValueChange={(value) =>
+                  handleFilterChange("userStatus", value)
+                }
               >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="All Statuses" />
@@ -261,7 +317,10 @@ export function UserTable() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="startDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <Label
+                htmlFor="startDate"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              >
                 Start Date
               </Label>
               <Popover>
@@ -269,19 +328,32 @@ export function UserTable() {
                   <Button
                     variant="outline"
                     className={`w-full justify-start text-left font-normal ${
-                      queryParams.startDate ? "text-gray-900 dark:text-gray-300" : "text-gray-500 dark:text-gray-400"
+                      queryParams.startDate
+                        ? "text-gray-900 dark:text-gray-300"
+                        : "text-gray-500 dark:text-gray-400"
                     }`}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {queryParams.startDate ? format(queryParams.startDate, "PPP") : <span>Pick a date</span>}
+                    {queryParams.startDate ? (
+                      format(queryParams.startDate, "PPP")
+                    ) : (
+                      <span>Pick a date</span>
+                    )}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
                   <Calendar
                     mode="single"
-                    selected={queryParams.startDate ? new Date(queryParams.startDate) : undefined}
+                    selected={
+                      queryParams.startDate
+                        ? new Date(queryParams.startDate)
+                        : undefined
+                    }
                     onSelect={(date) => {
-                      setFilter("startDate", date ? format(date, "yyyy-MM-dd") : "");
+                      setFilter(
+                        "startDate",
+                        date ? format(date, "yyyy-MM-dd") : ""
+                      );
                     }}
                     initialFocus
                   />
@@ -290,7 +362,10 @@ export function UserTable() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="endDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <Label
+                htmlFor="endDate"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              >
                 End Date
               </Label>
               <Popover>
@@ -298,19 +373,32 @@ export function UserTable() {
                   <Button
                     variant="outline"
                     className={`w-full justify-start text-left font-normal ${
-                      queryParams.endDate ? "text-gray-900 dark:text-gray-300" : "text-gray-500 dark:text-gray-400"
+                      queryParams.endDate
+                        ? "text-gray-900 dark:text-gray-300"
+                        : "text-gray-500 dark:text-gray-400"
                     }`}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {queryParams.endDate ? format(new Date(queryParams.endDate), "PPP") : <span>Pick a date</span>}
+                    {queryParams.endDate ? (
+                      format(new Date(queryParams.endDate), "PPP")
+                    ) : (
+                      <span>Pick a date</span>
+                    )}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
                   <Calendar
                     mode="single"
-                    selected={queryParams.endDate ? new Date(queryParams.endDate) : undefined}
+                    selected={
+                      queryParams.endDate
+                        ? new Date(queryParams.endDate)
+                        : undefined
+                    }
                     onSelect={(date) => {
-                      setFilter("endDate", date ? format(date, "yyyy-MM-dd") : "");
+                      setFilter(
+                        "endDate",
+                        date ? format(date, "yyyy-MM-dd") : ""
+                      );
                     }}
                     initialFocus
                   />
@@ -351,56 +439,70 @@ export function UserTable() {
           {isLoading ? (
             <div className="overflow-x-auto">
               <div className="min-w-[1000px]">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-gray-50 dark:bg-gray-800">
-                    <TableHead className="w-12 font-semibold text-gray-900 dark:text-white">Avatar</TableHead>
-                    <TableHead className="w-40 font-semibold text-gray-900 dark:text-white">Name</TableHead>
-                    <TableHead className="w-48 font-semibold text-gray-900 dark:text-white">Email</TableHead>
-                    <TableHead className="w-32 font-semibold text-gray-900 dark:text-white">Role</TableHead>
-                    <TableHead className="w-32 font-semibold text-gray-900 dark:text-white">Status</TableHead>
-                    <TableHead className="w-32 font-semibold text-gray-900 dark:text-white">Created</TableHead>
-                    <TableHead className="w-40 font-semibold text-gray-900 dark:text-white">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {Array.from({ length: 5 }).map((_, index) => (
-                    <TableRow key={index}>
-                      <TableCell className="py-4">
-                        <Skeleton className="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-700" />
-                      </TableCell>
-                      <TableCell className="py-4">
-                        <div className="space-y-2">
-                          <Skeleton className="h-4 w-24 bg-gray-200 dark:bg-gray-700" />
-                          <Skeleton className="h-3 w-20 bg-gray-200 dark:bg-gray-700" />
-                        </div>
-                      </TableCell>
-                      <TableCell className="py-4">
-                        <Skeleton className="h-4 w-32 bg-gray-200 dark:bg-gray-700" />
-                      </TableCell>
-                      <TableCell className="py-4">
-                        <Skeleton className="h-6 w-20 bg-gray-200 dark:bg-gray-700" />
-                      </TableCell>
-                      <TableCell className="py-4">
-                        <div className="flex items-center gap-2">
-                          <Skeleton className="h-2 w-2 rounded-full bg-gray-200 dark:bg-gray-700" />
-                          <Skeleton className="h-6 w-16 bg-gray-200 dark:bg-gray-700" />
-                        </div>
-                      </TableCell>
-                      <TableCell className="py-4">
-                        <Skeleton className="h-4 w-24 bg-gray-200 dark:bg-gray-700" />
-                      </TableCell>
-                      <TableCell className="py-4">
-                        <div className="flex gap-2">
-                          <Skeleton className="h-8 w-8 bg-gray-200 dark:bg-gray-700" />
-                          <Skeleton className="h-8 w-8 bg-gray-200 dark:bg-gray-700" />
-                          <Skeleton className="h-8 w-8 bg-gray-200 dark:bg-gray-700" />
-                        </div>
-                      </TableCell>
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-gray-50 dark:bg-gray-800">
+                      <TableHead className="w-12 font-semibold text-gray-900 dark:text-white">
+                        Avatar
+                      </TableHead>
+                      <TableHead className="w-40 font-semibold text-gray-900 dark:text-white">
+                        Name
+                      </TableHead>
+                      <TableHead className="w-48 font-semibold text-gray-900 dark:text-white">
+                        Email
+                      </TableHead>
+                      <TableHead className="w-32 font-semibold text-gray-900 dark:text-white">
+                        Role
+                      </TableHead>
+                      <TableHead className="w-32 font-semibold text-gray-900 dark:text-white">
+                        Status
+                      </TableHead>
+                      <TableHead className="w-32 font-semibold text-gray-900 dark:text-white">
+                        Created
+                      </TableHead>
+                      <TableHead className="w-40 font-semibold text-gray-900 dark:text-white">
+                        Actions
+                      </TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {Array.from({ length: 5 }).map((_, index) => (
+                      <TableRow key={index}>
+                        <TableCell className="py-4">
+                          <Skeleton className="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-700" />
+                        </TableCell>
+                        <TableCell className="py-4">
+                          <div className="space-y-2">
+                            <Skeleton className="h-4 w-24 bg-gray-200 dark:bg-gray-700" />
+                            <Skeleton className="h-3 w-20 bg-gray-200 dark:bg-gray-700" />
+                          </div>
+                        </TableCell>
+                        <TableCell className="py-4">
+                          <Skeleton className="h-4 w-32 bg-gray-200 dark:bg-gray-700" />
+                        </TableCell>
+                        <TableCell className="py-4">
+                          <Skeleton className="h-6 w-20 bg-gray-200 dark:bg-gray-700" />
+                        </TableCell>
+                        <TableCell className="py-4">
+                          <div className="flex items-center gap-2">
+                            <Skeleton className="h-2 w-2 rounded-full bg-gray-200 dark:bg-gray-700" />
+                            <Skeleton className="h-6 w-16 bg-gray-200 dark:bg-gray-700" />
+                          </div>
+                        </TableCell>
+                        <TableCell className="py-4">
+                          <Skeleton className="h-4 w-24 bg-gray-200 dark:bg-gray-700" />
+                        </TableCell>
+                        <TableCell className="py-4">
+                          <div className="flex gap-2">
+                            <Skeleton className="h-8 w-8 bg-gray-200 dark:bg-gray-700" />
+                            <Skeleton className="h-8 w-8 bg-gray-200 dark:bg-gray-700" />
+                            <Skeleton className="h-8 w-8 bg-gray-200 dark:bg-gray-700" />
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
               </div>
             </div>
           ) : users.length === 0 ? (
@@ -410,136 +512,149 @@ export function UserTable() {
           ) : (
             <div className="overflow-x-auto">
               <div className="min-w-[1000px]">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-gray-50 dark:bg-gray-800">
-                    <TableHead className="w-12 font-semibold text-gray-900 dark:text-white">Avatar</TableHead>
-                    <TableHead className="w-40 font-semibold text-gray-900 dark:text-white">Name</TableHead>
-                    <TableHead className="w-48 font-semibold text-gray-900 dark:text-white">Email</TableHead>
-                    <TableHead className="w-32 font-semibold text-gray-900 dark:text-white">Role</TableHead>
-                    <TableHead className="w-32 font-semibold text-gray-900 dark:text-white">Status</TableHead>
-                    <TableHead className="w-32 font-semibold text-gray-900 dark:text-white">Created</TableHead>
-                    <TableHead className="w-40 font-semibold text-gray-900 dark:text-white">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {users.map((user) => (
-                    <TableRow
-                      key={user._id}
-                      className="hover:bg-gray-50 dark:hover:bg-gray-800"
-                    >
-                      <TableCell className="py-4">
-                        <Avatar className="h-10 w-10">
-                          <AvatarImage
-                            src={user.avatar}
-                            alt={user.name}
-                          />
-                          <AvatarFallback className="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
-                            {user.name.charAt(0).toUpperCase()}
-                          </AvatarFallback>
-                        </Avatar>
-                      </TableCell>
-                      <TableCell className="py-4">
-                        <div className="space-y-1">
-                          <div className="font-medium text-gray-900 dark:text-white">
-                            {user.name}
-                          </div>
-                          {user.phone && (
-                            <div className="text-sm text-gray-500 dark:text-gray-400">
-                              {user.phone}
-                            </div>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell className="py-4">
-                        <div className="text-sm text-gray-600 dark:text-gray-400">
-                          {user.email}
-                        </div>
-                      </TableCell>
-                      <TableCell className="py-4">
-                        <Badge
-                          className={`${getRoleBadgeColor(user.role)} font-medium`}
-                        >
-                          {user.role}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="py-4">
-                        <div className="flex items-center gap-2">
-                          <div
-                            className={`h-2 w-2 rounded-full ${
-                              user.status === "active"
-                                ? "bg-green-500"
-                                : user.status === "pending"
-                                ? "bg-yellow-500"
-                                : "bg-red-500"
-                            }`}
-                          />
-                          <Badge
-                            variant={
-                              user.status === "active"
-                                ? "default"
-                                : user.status === "pending"
-                                ? "secondary"
-                                : "destructive"
-                            }
-                            className="font-medium"
-                          >
-                            {user.status}
-                          </Badge>
-                        </div>
-                      </TableCell>
-                      <TableCell className="py-4 text-sm text-gray-600 dark:text-gray-400">
-                        {format(user.createdAt, "PPP")}
-                      </TableCell>
-                      <TableCell className="py-4">
-                        <div className="flex items-center gap-1">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => openUserModal(user)}
-                            className="h-8 w-8 p-0 hover:bg-blue-100 dark:hover:bg-blue-900/20"
-                          >
-                            <Eye className="h-4 w-4 text-blue-600" />
-                          </Button>
-
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => openRoleModal(user)}
-                            className="h-8 w-8 p-0 hover:bg-green-100 dark:hover:bg-green-900/20"
-                          >
-                            <UserCog className="h-4 w-4 text-green-600" />
-                          </Button>
-
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                              setUserToBlockUnblock(user);
-                              setBlockDialogOpen(true);
-                            }}
-                            className="h-8 w-8 p-0 hover:bg-orange-100 dark:hover:bg-orange-900/20"
-                          >
-                            <Shield className="h-4 w-4 text-orange-600" />
-                          </Button>
-
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                              setUserToDelete(user);
-                              setDeleteDialogOpen(true);
-                            }}
-                            className="h-8 w-8 p-0 hover:bg-red-100 dark:hover:bg-red-900/20"
-                          >
-                            <Trash2 className="h-4 w-4 text-red-600" />
-                          </Button>
-                        </div>
-                      </TableCell>
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-gray-50 dark:bg-gray-800">
+                      <TableHead className="w-12 font-semibold text-gray-900 dark:text-white">
+                        Avatar
+                      </TableHead>
+                      <TableHead className="w-40 font-semibold text-gray-900 dark:text-white">
+                        Name
+                      </TableHead>
+                      <TableHead className="w-48 font-semibold text-gray-900 dark:text-white">
+                        Email
+                      </TableHead>
+                      <TableHead className="w-32 font-semibold text-gray-900 dark:text-white">
+                        Role
+                      </TableHead>
+                      <TableHead className="w-32 font-semibold text-gray-900 dark:text-white">
+                        Status
+                      </TableHead>
+                      <TableHead className="w-32 font-semibold text-gray-900 dark:text-white">
+                        Created
+                      </TableHead>
+                      <TableHead className="w-40 font-semibold text-gray-900 dark:text-white">
+                        Actions
+                      </TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {users.map((user) => (
+                      <TableRow
+                        key={user._id}
+                        className="hover:bg-gray-50 dark:hover:bg-gray-800"
+                      >
+                        <TableCell className="py-4">
+                          <Avatar className="h-10 w-10">
+                            <AvatarImage src={user.avatar} alt={user.name} />
+                            <AvatarFallback className="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
+                              {user.name.charAt(0).toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                        </TableCell>
+                        <TableCell className="py-4">
+                          <div className="space-y-1">
+                            <div className="font-medium text-gray-900 dark:text-white">
+                              {user.name}
+                            </div>
+                            {user.phone && (
+                              <div className="text-sm text-gray-500 dark:text-gray-400">
+                                {user.phone}
+                              </div>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell className="py-4">
+                          <div className="text-sm text-gray-600 dark:text-gray-400">
+                            {user.email}
+                          </div>
+                        </TableCell>
+                        <TableCell className="py-4">
+                          <Badge
+                            className={`${getRoleBadgeColor(user.role)} font-medium`}
+                          >
+                            {user.role}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="py-4">
+                          <div className="flex items-center gap-2">
+                            {(() => {
+                              const status = getUserStatus(user);
+                              return (
+                                <>
+                                  <div
+                                    className={`h-2 w-2 rounded-full ${
+                                      status === "active"
+                                        ? "bg-green-500"
+                                        : status === "pending"
+                                          ? "bg-yellow-500"
+                                          : status === "inactive"
+                                            ? "bg-gray-500"
+                                          : "bg-red-500"
+                                    }`}
+                                  />
+                                  <Badge
+                                    className={`${getStatusBadgeColor(status)} font-medium`}
+                                  >
+                                    {status}
+                                  </Badge>
+                                </>
+                              );
+                            })()}
+                          </div>
+                        </TableCell>
+                        <TableCell className="py-4 text-sm text-gray-600 dark:text-gray-400">
+                          {format(user.createdAt, "PPP")}
+                        </TableCell>
+                        <TableCell className="py-4">
+                          <div className="flex items-center gap-1">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => openUserModal(user)}
+                              className="h-8 w-8 p-0 hover:bg-blue-100 dark:hover:bg-blue-900/20"
+                            >
+                              <Eye className="h-4 w-4 text-blue-600" />
+                            </Button>
+
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => openRoleModal(user)}
+                              className="h-8 w-8 p-0 hover:bg-green-100 dark:hover:bg-green-900/20"
+                            >
+                              <UserCog className="h-4 w-4 text-green-600" />
+                            </Button>
+
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                setUserToBlockUnblock(user);
+                                setBlockDialogOpen(true);
+                              }}
+                              className="h-8 w-8 p-0 hover:bg-orange-100 dark:hover:bg-orange-900/20"
+                            >
+                              <Shield className="h-4 w-4 text-orange-600" />
+                            </Button>
+
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                setUserToDelete(user);
+                                setDeleteDialogOpen(true);
+                              }}
+                              className="h-8 w-8 p-0 hover:bg-red-100 dark:hover:bg-red-900/20"
+                            >
+                              <Trash2 className="h-4 w-4 text-red-600" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
               </div>
             </div>
           )}
@@ -600,16 +715,19 @@ export function UserTable() {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently block/unblock the
-              user account for <strong>{userToBlockUnblock?.name}</strong> and remove
-              all of their data from our servers.
+              This action cannot be undone. This will permanently block/unblock
+              the user account for <strong>{userToBlockUnblock?.name}</strong>{" "}
+              and remove all of their data from our servers.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
-                handleBlockUnblock(userToBlockUnblock!._id, !userToBlockUnblock!.isBlocked);
+                handleBlockUnblock(
+                  userToBlockUnblock!._id,
+                  !userToBlockUnblock!.isBlocked
+                );
                 setBlockDialogOpen(false);
                 setUserToBlockUnblock(null);
               }}

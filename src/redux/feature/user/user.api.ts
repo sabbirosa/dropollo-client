@@ -1,5 +1,11 @@
 import { baseApi } from "@/redux/baseApi";
-import type { IResponse, IUser, IUserStats, IUpdateProfileData, IChangePasswordData } from "@/types";
+import type {
+  IChangePasswordData,
+  IResponse,
+  IUpdateProfileData,
+  IUser,
+  IUserStats,
+} from "@/types";
 
 interface UserQueryParams {
   page?: number;
@@ -38,20 +44,26 @@ export const userApi = baseApi.injectEndpoints({
       providesTags: ["USER"],
     }),
 
-    updateUserRole: builder.mutation<IResponse<IUser>, { id: string; role: string }>({
+    updateUserRole: builder.mutation<
+      IResponse<IUser>,
+      { id: string; role: string }
+    >({
       query: ({ id, role }) => ({
         url: `/user/${id}/role`,
         method: "PUT",
-        body: { role },
+        data: { role },
       }),
       invalidatesTags: ["USER"],
     }),
 
-    blockUnblockUser: builder.mutation<IResponse<IUser>, { id: string; isBlocked: boolean; reason?: string }>({
+    blockUnblockUser: builder.mutation<
+      IResponse<IUser>,
+      { id: string; isBlocked: boolean; reason?: string }
+    >({
       query: ({ id, isBlocked, reason }) => ({
         url: `/user/${id}/block`,
         method: "PUT",
-        body: { isBlocked, reason },
+        data: { isBlocked, reason },
       }),
       invalidatesTags: ["USER"],
     }),
@@ -77,7 +89,7 @@ export const userApi = baseApi.injectEndpoints({
       query: (profileData) => ({
         url: "/user/profile/update",
         method: "PUT",
-        body: profileData,
+        data: profileData,
       }),
       invalidatesTags: ["USER"],
     }),
@@ -87,16 +99,19 @@ export const userApi = baseApi.injectEndpoints({
       query: (profileData) => ({
         url: "/auth/profile",
         method: "PUT",
-        body: profileData,
+        data: profileData,
       }),
       invalidatesTags: ["USER"],
     }),
 
-    changePassword: builder.mutation<IResponse<{ message: string }>, IChangePasswordData>({
+    changePassword: builder.mutation<
+      IResponse<{ message: string }>,
+      IChangePasswordData
+    >({
       query: ({ currentPassword, newPassword }) => ({
         url: "/auth/change-password",
         method: "PUT",
-        body: { currentPassword, newPassword },
+        data: { currentPassword, newPassword },
       }),
     }),
   }),
@@ -110,7 +125,7 @@ export const {
   useUpdateUserRoleMutation,
   useBlockUnblockUserMutation,
   useDeleteUserMutation,
-  
+
   // Profile hooks
   useGetMyProfileQuery,
   useUpdateMyProfileMutation,

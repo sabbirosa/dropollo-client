@@ -3,13 +3,12 @@ import { RegistrationForm } from "@/components/modules/authentication/Registrati
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useUserInfoQuery } from "@/redux/feature/auth/auth.api";
-import { navigateToDashboard } from "@/utils/navigationHelpers";
+import { getDashboardRoute } from "@/utils/navigationHelpers";
 import { ArrowLeft } from "lucide-react";
-import { Link, useNavigate } from "react-router";
+import { Link, Navigate } from "react-router";
 
 export default function Registration() {
   const { data, isLoading } = useUserInfoQuery(undefined);
-  const navigate = useNavigate();
 
   if (isLoading) {
     return (
@@ -36,8 +35,10 @@ export default function Registration() {
     );
   }
 
+  // If user is already authenticated, redirect to their role-based dashboard
   if (data?.data?.role && !isLoading) {
-    navigateToDashboard(data?.data?.role, navigate);
+    const dashboardRoute = getDashboardRoute(data.data.role);
+    return <Navigate to={dashboardRoute} replace />;
   }
 
   return (

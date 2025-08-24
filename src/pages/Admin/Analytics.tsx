@@ -47,9 +47,6 @@ import {
 export default function Analytics() {
   const { data: response, isLoading, error } = useGetParcelStatsQuery();
 
-  // Debug logging to see what we're getting from the API
-  console.log("Analytics API Response:", { response, isLoading, error });
-
   if (isLoading) {
     return (
       <div className="p-6 space-y-6">
@@ -86,7 +83,7 @@ export default function Analytics() {
               <Skeleton className="h-64 w-full bg-gray-200 dark:bg-gray-700" />
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardHeader>
               <Skeleton className="h-6 w-32 bg-gray-200 dark:bg-gray-700" />
@@ -109,7 +106,7 @@ export default function Analytics() {
               <Skeleton className="h-64 w-full bg-gray-200 dark:bg-gray-700" />
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardHeader>
               <Skeleton className="h-6 w-32 bg-gray-200 dark:bg-gray-700" />
@@ -134,14 +131,16 @@ export default function Analytics() {
             Failed to Load Analytics
           </h3>
           <p>Please try again later.</p>
-          {error && (
+          {error ? (
             <details className="mt-4 text-left max-w-md mx-auto">
-              <summary className="cursor-pointer text-sm">Error Details</summary>
+              <summary className="cursor-pointer text-sm">
+                Error Details
+              </summary>
               <pre className="text-xs mt-2 bg-red-50 p-2 rounded">
-                {JSON.stringify(error, null, 2)}
+                {JSON.stringify(error as object, null, 2)}
               </pre>
             </details>
-          )}
+          ) : null}
         </div>
       </div>
     );
@@ -173,8 +172,6 @@ export default function Analytics() {
     averageDeliveryTime: stats.averageDeliveryTime || "N/A",
     revenueThisMonth: stats.revenueThisMonth || 0,
   };
-
-  console.log("Processed Stats:", { statusBreakdown, safeStats });
 
   // Chart data preparation
   const statusChartData = [

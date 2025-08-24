@@ -118,7 +118,7 @@ export default function ParcelManagement() {
     isLoading,
     refetch,
   } = useGetAllParcelsQuery(queryParams);
-  console.log("parcelsData:", parcelsData);
+
   const [updateParcelStatus, { isLoading: isUpdatingStatus }] =
     useUpdateParcelStatusMutation();
   const [blockParcel, { isLoading: isBlocking }] = useBlockParcelMutation();
@@ -704,40 +704,40 @@ export default function ParcelManagement() {
                   <TableBody>
                     {Array.from({ length: 5 }).map((_, index) => (
                       <TableRow key={index}>
-                                              <TableCell className="py-4">
-                        <Skeleton className="h-6 w-24 bg-gray-200 dark:bg-gray-700" />
-                      </TableCell>
-                      <TableCell className="py-4">
-                        <div className="space-y-2">
+                        <TableCell className="py-4">
+                          <Skeleton className="h-6 w-24 bg-gray-200 dark:bg-gray-700" />
+                        </TableCell>
+                        <TableCell className="py-4">
+                          <div className="space-y-2">
+                            <Skeleton className="h-4 w-20 bg-gray-200 dark:bg-gray-700" />
+                            <Skeleton className="h-3 w-32 bg-gray-200 dark:bg-gray-700" />
+                          </div>
+                        </TableCell>
+                        <TableCell className="py-4">
+                          <div className="space-y-2">
+                            <Skeleton className="h-4 w-20 bg-gray-200 dark:bg-gray-700" />
+                            <Skeleton className="h-3 w-32 bg-gray-200 dark:bg-gray-700" />
+                          </div>
+                        </TableCell>
+                        <TableCell className="py-4">
+                          <Skeleton className="h-4 w-16 bg-gray-200 dark:bg-gray-700" />
+                        </TableCell>
+                        <TableCell className="py-4">
+                          <Skeleton className="h-6 w-20 bg-gray-200 dark:bg-gray-700" />
+                        </TableCell>
+                        <TableCell className="py-4">
+                          <Skeleton className="h-6 w-16 bg-gray-200 dark:bg-gray-700" />
+                        </TableCell>
+                        <TableCell className="py-4">
                           <Skeleton className="h-4 w-20 bg-gray-200 dark:bg-gray-700" />
-                          <Skeleton className="h-3 w-32 bg-gray-200 dark:bg-gray-700" />
-                        </div>
-                      </TableCell>
-                      <TableCell className="py-4">
-                        <div className="space-y-2">
-                          <Skeleton className="h-4 w-20 bg-gray-200 dark:bg-gray-700" />
-                          <Skeleton className="h-3 w-32 bg-gray-200 dark:bg-gray-700" />
-                        </div>
-                      </TableCell>
-                      <TableCell className="py-4">
-                        <Skeleton className="h-4 w-16 bg-gray-200 dark:bg-gray-700" />
-                      </TableCell>
-                      <TableCell className="py-4">
-                        <Skeleton className="h-6 w-20 bg-gray-200 dark:bg-gray-700" />
-                      </TableCell>
-                      <TableCell className="py-4">
-                        <Skeleton className="h-6 w-16 bg-gray-200 dark:bg-gray-700" />
-                      </TableCell>
-                      <TableCell className="py-4">
-                        <Skeleton className="h-4 w-20 bg-gray-200 dark:bg-gray-700" />
-                      </TableCell>
-                      <TableCell className="py-4">
-                        <div className="flex gap-2">
-                          <Skeleton className="h-8 w-8 bg-gray-200 dark:bg-gray-700" />
-                          <Skeleton className="h-8 w-8 bg-gray-200 dark:bg-gray-700" />
-                          <Skeleton className="h-8 w-8 bg-gray-200 dark:bg-gray-700" />
-                        </div>
-                      </TableCell>
+                        </TableCell>
+                        <TableCell className="py-4">
+                          <div className="flex gap-2">
+                            <Skeleton className="h-8 w-8 bg-gray-200 dark:bg-gray-700" />
+                            <Skeleton className="h-8 w-8 bg-gray-200 dark:bg-gray-700" />
+                            <Skeleton className="h-8 w-8 bg-gray-200 dark:bg-gray-700" />
+                          </div>
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
