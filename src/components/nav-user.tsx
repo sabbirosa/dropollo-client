@@ -1,30 +1,32 @@
 "use client";
 
 import {
-  BadgeCheck,
-  Bell,
-  ChevronsUpDown,
-  CreditCard,
-  LogOut,
-  Sparkles,
+    BadgeCheck,
+    Bell,
+    ChevronsUpDown,
+    LogOut,
+    User
 } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
+    SidebarMenu,
+    SidebarMenuButton,
+    SidebarMenuItem,
+    useSidebar,
 } from "@/components/ui/sidebar";
+import { useLogoutMutation, useUserInfoQuery } from "@/redux/feature/auth/auth.api";
+import { useNavigate } from "react-router";
+import { toast } from "sonner";
 
 export function NavUser({
   user,
@@ -36,9 +38,40 @@ export function NavUser({
   };
 }) {
   const { isMobile } = useSidebar();
+  const navigate = useNavigate();
+  const [logout, { isLoading: isLoggingOut }] = useLogoutMutation();
+  const { data: userData } = useUserInfoQuery(undefined);
 
   // const fallbackAvatar = user?.name[0] || "S";
   const avatarFallback = user.name ? user?.name[0] : "D";
+  
+  // Get user role for dynamic routing
+  const userRole = userData?.data?.role?.toLowerCase() || "user";
+
+  const handleLogout = async () => {
+    try {
+      await logout({}).unwrap();
+      toast.success("Logged out successfully");
+      navigate("/login");
+    } catch (error) {
+      toast.error("Logout failed");
+    }
+  };
+
+  const handleProfileClick = () => {
+    // Navigate to profile based on user role
+    navigate(`/${userRole}/profile`);
+  };
+
+  const handleAccountClick = () => {
+    // Navigate to account settings based on user role
+    navigate(`/${userRole}/account`);
+  };
+
+  const handleNotificationsClick = () => {
+    // Navigate to notifications based on user role
+    navigate(`/${userRole}/notifications`);
+  };
 
   return (
     <SidebarMenu>
@@ -84,30 +117,23 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <Sparkles />
-                Upgrade to Pro
+              <DropdownMenuItem onClick={handleProfileClick}>
+                <User />
+                My Profile
               </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={handleAccountClick}>
                 <BadgeCheck />
                 Account
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <CreditCard />
-                Billing
-              </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={handleNotificationsClick}>
                 <Bell />
                 Notifications
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout} disabled={isLoggingOut}>
               <LogOut />
-              Log out
+              {isLoggingOut ? "Logging out..." : "Log out"}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

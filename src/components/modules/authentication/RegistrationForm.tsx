@@ -1,12 +1,12 @@
 import { Button } from "@/components/ui/button";
 import {
-    Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import PasswordInput from "@/components/ui/password-input";
@@ -42,7 +42,7 @@ export function RegistrationForm({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
-  const [register] = useRegisterMutation();
+  const [register, isLoading] = useRegisterMutation();
   const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof registrationSchema>>({
@@ -65,9 +65,9 @@ export function RegistrationForm({
     try {
       const response = await register(userInfo).unwrap();
       toast.success("Registration successful!");
-      
+
       // Navigate to dashboard based on user role (registration auto-logs in)
-      if (response?.data?.role) {
+      if (response?.data?.role && !isLoading) {
         navigateToDashboard(response.data.role, navigate);
       } else {
         // Fallback navigation if role is not available

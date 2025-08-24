@@ -4,13 +4,13 @@ import { cn } from "@/lib/utils";
 import { Link, useNavigate } from "react-router";
 
 import {
-    Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import PasswordInput from "@/components/ui/password-input";
 import config from "@/config";
@@ -36,7 +36,7 @@ export function LoginForm({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
-  const [login] = useLoginMutation();
+  const [login, isLoading] = useLoginMutation();
   const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof loginSchema>>({
@@ -56,9 +56,9 @@ export function LoginForm({
     try {
       const response = await login(userInfo).unwrap();
       toast.success("Login successful!");
-      
+
       // Navigate to dashboard based on user role
-      if (response?.data?.user?.role) {
+      if (response?.data?.user?.role && !isLoading) {
         navigateToDashboard(response.data.user.role, navigate);
       } else {
         // Fallback navigation if role is not available

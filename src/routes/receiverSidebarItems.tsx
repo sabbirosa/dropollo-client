@@ -1,123 +1,54 @@
-import ConfirmDelivery from "@/pages/Receiver/ConfirmDelivery";
 import type { ISidebarItems } from "@/types";
-import {
-    Bell,
-    CheckSquare,
-    History,
-    Inbox,
-    User
-} from "lucide-react";
+import { Bell, History, Inbox, Settings, User } from "lucide-react";
 import { lazy } from "react";
 
 const IncomingParcels = lazy(() => import("@/pages/Receiver/IncomingParcels"));
 const DeliveryHistory = lazy(() => import("@/pages/Receiver/DeliveryHistory"));
 const Profile = lazy(() => import("@/pages/Receiver/Profile"));
+const Account = lazy(() => import("@/pages/Shared/Account"));
+const Notifications = lazy(() => import("@/pages/Shared/Notifications"));
 
 export const receiverSidebarItems: ISidebarItems[] = [
   {
-    title: "Deliveries",
-    url: "#",
-    icon: CheckSquare,
-    isActive: true,
-    items: [
-      {
-        title: "Confirm Delivery",
-        url: "/receiver/confirm-delivery",
-        component: ConfirmDelivery,
-      },
-      {
-        title: "Pending Confirmations",
-        url: "/receiver/pending",
-        component: ConfirmDelivery,
-      },
-    ],
-  },
-  {
     title: "Incoming Parcels",
-    url: "#",
+    url: "/receiver/incoming-parcels",
     icon: Inbox,
     items: [
       {
-        title: "Expected Deliveries",
+        title: "All Parcels",
         url: "/receiver/incoming-parcels",
         component: IncomingParcels,
       },
-      {
-        title: "Track Incoming",
-        url: "/receiver/track-incoming",
-        component: IncomingParcels,
-      },
-      {
-        title: "Delivery Schedule",
-        url: "/receiver/schedule",
-        component: IncomingParcels,
-      },
     ],
   },
   {
-    title: "History",
-    url: "#",
+    title: "Delivery History",
+    url: "/receiver/delivery-history",
     icon: History,
     items: [
       {
-        title: "Delivery History",
+        title: "All History",
         url: "/receiver/delivery-history",
         component: DeliveryHistory,
       },
-      {
-        title: "Photos & Signatures",
-        url: "/receiver/proof",
-        component: DeliveryHistory,
-      },
-      {
-        title: "Delivery Ratings",
-        url: "/receiver/ratings",
-        component: DeliveryHistory,
-      },
     ],
+  },
+  {
+    title: "My Profile",
+    url: "/receiver/profile",
+    icon: User,
+    component: Profile,
+  },
+  {
+    title: "Account Settings",
+    url: "/receiver/account",
+    icon: Settings,
+    component: Account,
   },
   {
     title: "Notifications",
-    url: "#",
+    url: "/receiver/notifications",
     icon: Bell,
-    items: [
-      {
-        title: "Delivery Alerts",
-        url: "/receiver/alerts",
-        component: IncomingParcels,
-      },
-      {
-        title: "SMS Notifications",
-        url: "/receiver/sms",
-        component: IncomingParcels,
-      },
-      {
-        title: "Email Updates",
-        url: "/receiver/email",
-        component: IncomingParcels,
-      },
-    ],
-  },
-  {
-    title: "Account",
-    url: "#",
-    icon: User,
-    items: [
-      {
-        title: "My Profile",
-        url: "/receiver/profile",
-        component: Profile,
-      },
-      {
-        title: "Delivery Addresses",
-        url: "/receiver/addresses",
-        component: Profile,
-      },
-      {
-        title: "Preferences",
-        url: "/receiver/preferences",
-        component: Profile,
-      },
-    ],
+    component: Notifications,
   },
 ];

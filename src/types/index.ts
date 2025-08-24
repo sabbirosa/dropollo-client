@@ -5,13 +5,29 @@ import type {
   RefAttributes,
 } from "react";
 
+export type {
+  ICreateParcel,
+  IParcel,
+  IParcelFilters,
+  IParcelStats,
+  IUpdateParcel,
+  IUpdateParcelStatus,
+} from "./parcel.type";
 export type { IUser, TRole } from "./user.type";
+
+export interface IMeta {
+  page: number;
+  limit: number;
+  totalPage: number;
+  total: number;
+}
 
 export interface IResponse<T> {
   statusCode: number;
   success: boolean;
   message: string;
   data: T;
+  meta?: IMeta;
 }
 
 export interface ISidebarItems {

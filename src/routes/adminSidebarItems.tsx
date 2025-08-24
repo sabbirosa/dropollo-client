@@ -1,32 +1,26 @@
 import type { ISidebarItems } from "@/types";
-import {
-  FileText,
-  Package,
-  Settings2,
-  SquareTerminal,
-  User,
-  Users
-} from "lucide-react";
+import { Bell, Package, Settings, SquareTerminal, User, Users } from "lucide-react";
 import { lazy } from "react";
 
 const Analytics = lazy(() => import("@/pages/Admin/Analytics"));
 const UserManagement = lazy(() => import("@/pages/Admin/UserManagement"));
 const ParcelManagement = lazy(() => import("@/pages/Admin/ParcelManagement"));
 const Reports = lazy(() => import("@/pages/Admin/Reports"));
-const Settings = lazy(() => import("@/pages/Admin/Settings"));
 const Profile = lazy(() => import("@/pages/Admin/Profile"));
+const Account = lazy(() => import("@/pages/Shared/Account"));
+const Notifications = lazy(() => import("@/pages/Shared/Notifications"));
 
 export const adminSidebarItems: ISidebarItems[] = [
   {
-    title: "Dashboard",
-    url: "#",
+    title: "Analytics",
+    url: "/admin/analytics",
     icon: SquareTerminal,
-    isActive: true,
+    component: Analytics,
     items: [
       {
-        title: "Analytics",
-        url: "/admin/analytics",
-        component: Analytics,
+        title: "Reports",
+        url: "/admin/analytics/reports",
+        component: Reports,
       },
     ],
   },
@@ -34,91 +28,42 @@ export const adminSidebarItems: ISidebarItems[] = [
     title: "User Management",
     url: "/admin/user-management",
     icon: Users,
-    isActive: true,
     items: [
       {
         title: "All Users",
-        url: "/admin/user-management",
+        url: "/admin/user-management/all-users",
         component: UserManagement,
       },
     ],
   },
   {
     title: "Parcel Management",
-    url: "#",
+    url: "/admin/parcel-management",
     icon: Package,
     items: [
       {
         title: "All Parcels",
-        url: "/admin/parcel-management",
-        component: ParcelManagement,
-      },
-      {
-        title: "Pending Deliveries",
-        url: "/admin/pending-deliveries",
-        component: ParcelManagement,
-      },
-      {
-        title: "Delivery Issues",
-        url: "/admin/delivery-issues",
+        url: "/admin/parcel-management/all-parcels",
         component: ParcelManagement,
       },
     ],
   },
   {
-    title: "Reports & Analytics",
-    url: "#",
-    icon: FileText,
-    items: [
-      {
-        title: "Delivery Reports",
-        url: "/admin/reports",
-        component: Reports,
-      },
-      {
-        title: "Financial Reports",
-        url: "/admin/financial-reports",
-        component: Reports,
-      },
-      {
-        title: "Performance Metrics",
-        url: "/admin/performance",
-        component: Reports,
-      },
-    ],
-  },
-  {
-    title: "System",
-    url: "#",
-    icon: Settings2,
-    items: [
-      {
-        title: "Settings",
-        url: "/admin/settings",
-        component: Settings,
-      },
-      {
-        title: "Security",
-        url: "/admin/security",
-        component: Settings,
-      },
-      {
-        title: "Notifications",
-        url: "/admin/notifications",
-        component: Settings,
-      },
-    ],
-  },
-  {
-    title: "Account",
-    url: "#",
+    title: "My Profile",
+    url: "/admin/profile",
     icon: User,
-    items: [
-      {
-        title: "My Profile",
-        url: "/admin/profile",
-        component: Profile,
-      },
-    ],
+    component: Profile,
+  },
+  {
+    title: "Account Settings",
+    url: "/admin/account",
+    icon: Settings,
+    component: Account,
+  },
+  {
+    title: "Notifications",
+    url: "/admin/notifications",
+    icon: Bell,
+    component: Notifications,
   },
 ];
