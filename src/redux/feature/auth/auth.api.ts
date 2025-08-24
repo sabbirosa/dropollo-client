@@ -24,7 +24,10 @@ export const authApi = baseApi.injectEndpoints({
       }),
     }),
 
-    login: builder.mutation<IResponse<{ user: IUser; accessToken: string }>, LoginData>({
+    login: builder.mutation<
+      IResponse<{ user: IUser; accessToken: string }>,
+      LoginData
+    >({
       query: (userData) => ({
         url: "/auth/login",
         method: "POST",
@@ -38,14 +41,6 @@ export const authApi = baseApi.injectEndpoints({
         method: "POST",
       }),
       invalidatesTags: ["USER", "PARCEL"],
-      async onQueryStarted(_, { dispatch, queryFulfilled }) {
-        try {
-          await queryFulfilled;
-          dispatch(baseApi.util.resetApiState());
-        } catch {
-          dispatch(baseApi.util.resetApiState());
-        }
-      },
     }),
 
     userInfo: builder.query<IResponse<IUser>, void>({
