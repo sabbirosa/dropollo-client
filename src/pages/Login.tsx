@@ -23,7 +23,7 @@ export default function Login() {
             <Skeleton className="h-8 w-32 mx-auto bg-gray-200 dark:bg-gray-700" />
             <Skeleton className="h-4 w-48 mx-auto bg-gray-200 dark:bg-gray-700" />
           </div>
-          
+
           {/* Form Skeleton */}
           <div className="space-y-4">
             {Array.from({ length: 2 }).map((_, i) => (
@@ -69,7 +69,7 @@ export default function Login() {
       </div>
       <div className="bg-muted relative hidden lg:block">
         <img
-          src="src/assets/images/parcel-delivery-image2.jpg"
+          src="./src/assets/images/parcel-delivery-image2.jpg"
           alt="Image"
           className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
         />

@@ -19,7 +19,7 @@ export default function Registration() {
             <Skeleton className="h-8 w-40 mx-auto bg-gray-200 dark:bg-gray-700" />
             <Skeleton className="h-4 w-56 mx-auto bg-gray-200 dark:bg-gray-700" />
           </div>
-          
+
           {/* Form Skeleton */}
           <div className="space-y-4">
             {Array.from({ length: 4 }).map((_, i) => (
@@ -64,7 +64,7 @@ export default function Registration() {
       </div>
       <div className="bg-muted relative hidden lg:block">
         <img
-          src="src/assets/images/parcel-delivery-image1.jpg"
+          src="./src/assets/images/parcel-delivery-image1.jpg"
           alt="Image"
           className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
         />

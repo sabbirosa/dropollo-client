@@ -6,8 +6,6 @@ export const axiosInstance = axios.create({
   withCredentials: true,
 });
 
-console.log("API Base URL:", config.apiBaseUrl);
-
 // Add a request interceptor
 axiosInstance.interceptors.request.use(
   function (config) {
