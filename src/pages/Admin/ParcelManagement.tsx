@@ -41,6 +41,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useTableQuery } from "@/hooks/useTableQuery";
 import {
+  useAssignDeliveryPersonnelMutation,
   useBlockParcelMutation,
   useDeleteParcelMutation,
   useGetAllParcelsQuery,
@@ -54,8 +55,10 @@ import {
   getStatusText,
   getUrgencyColor,
 } from "@/utils/parcelUtils";
+import { format } from "date-fns";
 import {
   AlertTriangle,
+  CalendarIcon,
   CheckCircle,
   ChevronLeft,
   ChevronRight,
@@ -67,11 +70,9 @@ import {
   Shield,
   Trash2,
   Truck,
-  CalendarIcon,
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { format } from "date-fns";
 
 export default function ParcelManagement() {
   const {
@@ -96,6 +97,22 @@ export default function ParcelManagement() {
   });
   const [blockReason, setBlockReason] = useState("");
 
+  // Assignment modal state
+  const [isAssignmentModalOpen, setIsAssignmentModalOpen] = useState(false);
+  const [assignmentData, setAssignmentData] = useState({
+    deliveryPersonnel: {
+      name: "",
+      email: "",
+      phone: "",
+      employeeId: "",
+      vehicleInfo: {
+        type: "",
+        plateNumber: "",
+      },
+    },
+    note: "",
+  });
+
   const {
     data: parcelsData,
     isLoading,
@@ -106,6 +123,8 @@ export default function ParcelManagement() {
     useUpdateParcelStatusMutation();
   const [blockParcel, { isLoading: isBlocking }] = useBlockParcelMutation();
   const [deleteParcel, { isLoading: isDeleting }] = useDeleteParcelMutation();
+  const [assignDeliveryPersonnel, { isLoading: isAssigning }] =
+    useAssignDeliveryPersonnelMutation();
 
   const handleFilterChange = (key: string, value: string) => {
     if (value === "all" || value === "") {
@@ -158,6 +177,123 @@ export default function ParcelManagement() {
       console.error(error);
       toast.error("Failed to block/unblock parcel");
     }
+  };
+
+  const handleAssignDeliveryPersonnel = async () => {
+    if (!selectedParcel) return;
+
+    // Validate form before submission
+    if (!validateAssignmentForm()) {
+      return;
+    }
+
+    try {
+      await assignDeliveryPersonnel({
+        id: selectedParcel._id,
+        deliveryPersonnel: assignmentData.deliveryPersonnel,
+        note: assignmentData.note,
+      }).unwrap();
+      toast.success("Delivery personnel assigned successfully!");
+      setIsAssignmentModalOpen(false);
+      setAssignmentData({
+        deliveryPersonnel: {
+          name: "",
+          email: "",
+          phone: "",
+          employeeId: "",
+          vehicleInfo: {
+            type: "",
+            plateNumber: "",
+          },
+        },
+        note: "",
+      });
+      setSelectedParcel(null);
+      refetch();
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to assign delivery personnel");
+    }
+  };
+
+  const handleReassignDeliveryPersonnel = async () => {
+    if (!selectedParcel) return;
+
+    // Validate form before submission
+    if (!validateAssignmentForm()) {
+      return;
+    }
+
+    try {
+      await assignDeliveryPersonnel({
+        id: selectedParcel._id,
+        deliveryPersonnel: assignmentData.deliveryPersonnel,
+        note: assignmentData.note,
+      }).unwrap();
+      toast.success("Delivery personnel reassigned successfully!");
+      setIsAssignmentModalOpen(false);
+      setAssignmentData({
+        deliveryPersonnel: {
+          name: "",
+          email: "",
+          phone: "",
+          employeeId: "",
+          vehicleInfo: {
+            type: "",
+            plateNumber: "",
+          },
+        },
+        note: "",
+      });
+      setSelectedParcel(null);
+      refetch();
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to reassign delivery personnel");
+    }
+  };
+
+  const resetAssignmentForm = () => {
+    setAssignmentData({
+      deliveryPersonnel: {
+        name: "",
+        email: "",
+        phone: "",
+        employeeId: "",
+        vehicleInfo: {
+          type: "",
+          plateNumber: "",
+        },
+      },
+      note: "",
+    });
+  };
+
+  const validateAssignmentForm = () => {
+    const { name, email, phone } = assignmentData.deliveryPersonnel;
+    const { type, plateNumber } = assignmentData.deliveryPersonnel.vehicleInfo;
+
+    if (!name.trim()) {
+      toast.error("Delivery personnel name is required");
+      return false;
+    }
+    if (!email.trim()) {
+      toast.error("Delivery personnel email is required");
+      return false;
+    }
+    if (!phone.trim()) {
+      toast.error("Delivery personnel phone is required");
+      return false;
+    }
+    if (!type.trim()) {
+      toast.error("Vehicle type is required");
+      return false;
+    }
+    if (!plateNumber.trim()) {
+      toast.error("Vehicle plate number is required");
+      return false;
+    }
+    return true;
   };
 
   const handleDeleteParcel = async () => {
@@ -327,7 +463,10 @@ export default function ParcelManagement() {
         </CardHeader>
         <CardContent>
           <div className="mb-6">
-            <Label htmlFor="globalSearch" className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+            <Label
+              htmlFor="globalSearch"
+              className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
               Search
             </Label>
             <Input
@@ -340,7 +479,10 @@ export default function ParcelManagement() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="status" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <Label
+                htmlFor="status"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              >
                 Status
               </Label>
               <Select
@@ -362,7 +504,10 @@ export default function ParcelManagement() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="trackingId" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <Label
+                htmlFor="trackingId"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              >
                 Tracking ID
               </Label>
               <Input
@@ -377,7 +522,10 @@ export default function ParcelManagement() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="receiverEmail" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <Label
+                htmlFor="receiverEmail"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              >
                 Receiver Email
               </Label>
               <Input
@@ -392,7 +540,10 @@ export default function ParcelManagement() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="urgency" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <Label
+                htmlFor="urgency"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              >
                 Urgency
               </Label>
               <Select
@@ -414,7 +565,10 @@ export default function ParcelManagement() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
             <div className="space-y-2">
-              <Label htmlFor="startDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <Label
+                htmlFor="startDate"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              >
                 Start Date
               </Label>
               <Popover>
@@ -422,17 +576,27 @@ export default function ParcelManagement() {
                   <Button
                     variant="outline"
                     className={`w-full justify-start text-left font-normal ${
-                      queryParams.startDate ? "text-gray-900 dark:text-gray-100" : "text-gray-500 dark:text-gray-400"
+                      queryParams.startDate
+                        ? "text-gray-900 dark:text-gray-100"
+                        : "text-gray-500 dark:text-gray-400"
                     }`}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {queryParams.startDate ? format(new Date(queryParams.startDate), "PPP") : <span>Pick a start date</span>}
+                    {queryParams.startDate ? (
+                      format(new Date(queryParams.startDate), "PPP")
+                    ) : (
+                      <span>Pick a start date</span>
+                    )}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
                   <Calendar
                     mode="single"
-                    selected={queryParams.startDate ? new Date(queryParams.startDate) : undefined}
+                    selected={
+                      queryParams.startDate
+                        ? new Date(queryParams.startDate)
+                        : undefined
+                    }
                     onSelect={(date) => {
                       const newDate = date ? date.toISOString() : "";
                       setFilter("startDate", newDate);
@@ -444,7 +608,10 @@ export default function ParcelManagement() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="endDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <Label
+                htmlFor="endDate"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              >
                 End Date
               </Label>
               <Popover>
@@ -452,17 +619,27 @@ export default function ParcelManagement() {
                   <Button
                     variant="outline"
                     className={`w-full justify-start text-left font-normal ${
-                      queryParams.endDate ? "text-gray-900 dark:text-gray-100" : "text-gray-500 dark:text-gray-400"
+                      queryParams.endDate
+                        ? "text-gray-900 dark:text-gray-100"
+                        : "text-gray-500 dark:text-gray-400"
                     }`}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {queryParams.endDate ? format(new Date(queryParams.endDate), "PPP") : <span>Pick an end date</span>}
+                    {queryParams.endDate ? (
+                      format(new Date(queryParams.endDate), "PPP")
+                    ) : (
+                      <span>Pick an end date</span>
+                    )}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
                   <Calendar
                     mode="single"
-                    selected={queryParams.endDate ? new Date(queryParams.endDate) : undefined}
+                    selected={
+                      queryParams.endDate
+                        ? new Date(queryParams.endDate)
+                        : undefined
+                    }
                     onSelect={(date) => {
                       const newDate = date ? date.toISOString() : "";
                       setFilter("endDate", newDate);
@@ -475,7 +652,11 @@ export default function ParcelManagement() {
 
             <div className="flex items-end">
               {hasFilters && (
-                <Button variant="outline" onClick={clearFilters} className="w-full">
+                <Button
+                  variant="outline"
+                  onClick={clearFilters}
+                  className="w-full"
+                >
                   Clear Filters
                 </Button>
               )}
@@ -506,14 +687,30 @@ export default function ParcelManagement() {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-gray-50 dark:bg-gray-800">
-                    <TableHead className="font-semibold text-gray-900 dark:text-white">Tracking ID</TableHead>
-                    <TableHead className="font-semibold text-gray-900 dark:text-white">Sender</TableHead>
-                    <TableHead className="font-semibold text-gray-900 dark:text-white">Receiver</TableHead>
-                    <TableHead className="font-semibold text-gray-900 dark:text-white">Type</TableHead>
-                    <TableHead className="font-semibold text-gray-900 dark:text-white">Status</TableHead>
-                    <TableHead className="font-semibold text-gray-900 dark:text-white">Urgency</TableHead>
-                    <TableHead className="font-semibold text-gray-900 dark:text-white">Total Fee</TableHead>
-                    <TableHead className="font-semibold text-gray-900 dark:text-white">Actions</TableHead>
+                    <TableHead className="font-semibold text-gray-900 dark:text-white">
+                      Tracking ID
+                    </TableHead>
+                    <TableHead className="font-semibold text-gray-900 dark:text-white">
+                      Sender
+                    </TableHead>
+                    <TableHead className="font-semibold text-gray-900 dark:text-white">
+                      Receiver
+                    </TableHead>
+                    <TableHead className="font-semibold text-gray-900 dark:text-white">
+                      Type
+                    </TableHead>
+                    <TableHead className="font-semibold text-gray-900 dark:text-white">
+                      Status
+                    </TableHead>
+                    <TableHead className="font-semibold text-gray-900 dark:text-white">
+                      Urgency
+                    </TableHead>
+                    <TableHead className="font-semibold text-gray-900 dark:text-white">
+                      Total Fee
+                    </TableHead>
+                    <TableHead className="font-semibold text-gray-900 dark:text-white">
+                      Actions
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -524,9 +721,14 @@ export default function ParcelManagement() {
                     >
                       <TableCell className="font-mono text-sm py-4">
                         <div className="flex items-center gap-2">
-                          <span className="font-medium">{parcel.trackingId}</span>
+                          <span className="font-medium">
+                            {parcel.trackingId}
+                          </span>
                           {parcel.isBlocked && (
-                            <Badge variant="destructive" className="text-xs px-2 py-1">
+                            <Badge
+                              variant="destructive"
+                              className="text-xs px-2 py-1"
+                            >
                               Blocked
                             </Badge>
                           )}
@@ -569,6 +771,14 @@ export default function ParcelManagement() {
                           >
                             {getStatusText(parcel.currentStatus)}
                           </Badge>
+                          {parcel.deliveryPersonnel && (
+                            <div className="flex items-center gap-1 ml-2">
+                              <Truck className="h-3 w-3 text-purple-600" />
+                              <span className="text-xs text-purple-600 font-medium">
+                                Assigned
+                              </span>
+                            </div>
+                          )}
                         </div>
                       </TableCell>
                       <TableCell className="py-4">
@@ -596,7 +806,7 @@ export default function ParcelManagement() {
                                 <Eye className="h-4 w-4 text-blue-600" />
                               </Button>
                             </DialogTrigger>
-                            <DialogContent className="max-w-2xl">
+                            <DialogContent className="max-w-2xl max-h-[calc(100vh-4rem)] overflow-y-auto">
                               <DialogHeader>
                                 <DialogTitle>Parcel Details</DialogTitle>
                                 <DialogDescription>
@@ -719,6 +929,76 @@ export default function ParcelManagement() {
                                     </p>
                                   </div>
                                 </div>
+
+                                {/* Delivery Personnel Information */}
+                                <div>
+                                  <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Delivery Personnel
+                                  </Label>
+                                  <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-md">
+                                    {parcel.deliveryPersonnel ? (
+                                      <div className="space-y-2">
+                                        <p className="text-sm text-gray-900 dark:text-white">
+                                          <span className="font-medium">
+                                            Name:
+                                          </span>{" "}
+                                          {parcel.deliveryPersonnel.name}
+                                        </p>
+                                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                                          <span className="font-medium">
+                                            Email:
+                                          </span>{" "}
+                                          {parcel.deliveryPersonnel.email}
+                                        </p>
+                                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                                          <span className="font-medium">
+                                            Phone:
+                                          </span>{" "}
+                                          {parcel.deliveryPersonnel.phone}
+                                        </p>
+                                        {parcel.deliveryPersonnel
+                                          .employeeId && (
+                                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                                            <span className="font-medium">
+                                              Employee ID:
+                                            </span>{" "}
+                                            {
+                                              parcel.deliveryPersonnel
+                                                .employeeId
+                                            }
+                                          </p>
+                                        )}
+                                        {parcel.deliveryPersonnel
+                                          .vehicleInfo && (
+                                          <div className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-700">
+                                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                                              <span className="font-medium">
+                                                Vehicle:
+                                              </span>{" "}
+                                              {
+                                                parcel.deliveryPersonnel
+                                                  .vehicleInfo.type
+                                              }
+                                            </p>
+                                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                                              <span className="font-medium">
+                                                Plate:
+                                              </span>{" "}
+                                              {
+                                                parcel.deliveryPersonnel
+                                                  .vehicleInfo.plateNumber
+                                              }
+                                            </p>
+                                          </div>
+                                        )}
+                                      </div>
+                                    ) : (
+                                      <p className="text-sm text-gray-500 dark:text-gray-400 italic">
+                                        No delivery personnel assigned yet
+                                      </p>
+                                    )}
+                                  </div>
+                                </div>
                               </div>
                             </DialogContent>
                           </Dialog>
@@ -762,6 +1042,45 @@ export default function ParcelManagement() {
                             className="h-8 w-8 p-0 hover:bg-red-100 dark:hover:bg-red-900/20"
                           >
                             <Trash2 className="h-4 w-4 text-red-600" />
+                          </Button>
+
+                          {/* Assignment/Reassignment button */}
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              setSelectedParcel(parcel);
+                              if (parcel.deliveryPersonnel) {
+                                // Pre-fill form with current assignment data for reassignment
+                                const dp = parcel.deliveryPersonnel;
+                                setAssignmentData({
+                                  deliveryPersonnel: {
+                                    name: dp.name,
+                                    email: dp.email,
+                                    phone: dp.phone,
+                                    employeeId: dp.employeeId || "",
+                                    vehicleInfo: {
+                                      type: dp.vehicleInfo?.type || "",
+                                      plateNumber:
+                                        dp.vehicleInfo?.plateNumber || "",
+                                    },
+                                  },
+                                  note: "",
+                                });
+                              } else {
+                                // Reset form for new assignment
+                                resetAssignmentForm();
+                              }
+                              setIsAssignmentModalOpen(true);
+                            }}
+                            className="h-8 w-8 p-0 hover:bg-purple-100 dark:hover:bg-purple-900/20"
+                            title={
+                              parcel.deliveryPersonnel
+                                ? "Reassign Delivery Personnel"
+                                : "Assign Delivery Personnel"
+                            }
+                          >
+                            <Truck className="h-4 w-4 text-purple-600" />
                           </Button>
                         </div>
                       </TableCell>
@@ -816,7 +1135,9 @@ export default function ParcelManagement() {
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">New Status</Label>
+              <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                New Status
+              </Label>
               <Select
                 value={statusUpdate.status}
                 onValueChange={(value) =>
@@ -839,7 +1160,9 @@ export default function ParcelManagement() {
               </Select>
             </div>
             <div>
-              <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Location (Optional)</Label>
+              <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Location (Optional)
+              </Label>
               <Input
                 placeholder="Current location"
                 value={statusUpdate.location}
@@ -852,7 +1175,9 @@ export default function ParcelManagement() {
               />
             </div>
             <div>
-              <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Note (Optional)</Label>
+              <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Note (Optional)
+              </Label>
               <Textarea
                 placeholder="Status update note"
                 value={statusUpdate.note}
@@ -892,7 +1217,9 @@ export default function ParcelManagement() {
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Reason</Label>
+              <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Reason
+              </Label>
               <Textarea
                 placeholder="Reason for blocking/unblocking"
                 value={blockReason}
@@ -947,6 +1274,206 @@ export default function ParcelManagement() {
             >
               {isDeleting ? "Deleting..." : "Delete"}
             </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Assign Delivery Personnel Modal */}
+      <Dialog
+        open={isAssignmentModalOpen}
+        onOpenChange={setIsAssignmentModalOpen}
+      >
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>
+              {selectedParcel?.deliveryPersonnel
+                ? "Reassign Delivery Personnel"
+                : "Assign Delivery Personnel"}
+            </DialogTitle>
+            <DialogDescription>
+              {selectedParcel?.deliveryPersonnel
+                ? `Reassign delivery personnel for parcel ${selectedParcel?.trackingId}`
+                : `Assign delivery personnel to parcel ${selectedParcel?.trackingId}`}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            {/* Delivery Personnel Information */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Name *
+                </Label>
+                <Input
+                  placeholder="Full name"
+                  value={assignmentData.deliveryPersonnel.name}
+                  onChange={(e) =>
+                    setAssignmentData((prev) => ({
+                      ...prev,
+                      deliveryPersonnel: {
+                        ...prev.deliveryPersonnel,
+                        name: e.target.value,
+                      },
+                    }))
+                  }
+                />
+              </div>
+              <div>
+                <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Email *
+                </Label>
+                <Input
+                  type="email"
+                  placeholder="email@example.com"
+                  value={assignmentData.deliveryPersonnel.email}
+                  onChange={(e) =>
+                    setAssignmentData((prev) => ({
+                      ...prev,
+                      deliveryPersonnel: {
+                        ...prev.deliveryPersonnel,
+                        email: e.target.value,
+                      },
+                    }))
+                  }
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Phone *
+                </Label>
+                <Input
+                  placeholder="+1234567890"
+                  value={assignmentData.deliveryPersonnel.phone}
+                  onChange={(e) =>
+                    setAssignmentData((prev) => ({
+                      ...prev,
+                      deliveryPersonnel: {
+                        ...prev.deliveryPersonnel,
+                        phone: e.target.value,
+                      },
+                    }))
+                  }
+                />
+              </div>
+              <div>
+                <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Employee ID
+                </Label>
+                <Input
+                  placeholder="EMP001"
+                  value={assignmentData.deliveryPersonnel.employeeId}
+                  onChange={(e) =>
+                    setAssignmentData((prev) => ({
+                      ...prev,
+                      deliveryPersonnel: {
+                        ...prev.deliveryPersonnel,
+                        employeeId: e.target.value,
+                      },
+                    }))
+                  }
+                />
+              </div>
+            </div>
+
+            {/* Vehicle Information */}
+            <div className="space-y-3">
+              <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Vehicle Information *
+              </Label>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                    Vehicle Type *
+                  </Label>
+                  <Input
+                    placeholder="Motorcycle, Car, Van, etc."
+                    value={assignmentData.deliveryPersonnel.vehicleInfo.type}
+                    onChange={(e) =>
+                      setAssignmentData((prev) => ({
+                        ...prev,
+                        deliveryPersonnel: {
+                          ...prev.deliveryPersonnel,
+                          vehicleInfo: {
+                            ...prev.deliveryPersonnel.vehicleInfo,
+                            type: e.target.value,
+                          },
+                        },
+                      }))
+                    }
+                  />
+                </div>
+                <div>
+                  <Label className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                    Plate Number *
+                  </Label>
+                  <Input
+                    placeholder="ABC123"
+                    value={
+                      assignmentData.deliveryPersonnel.vehicleInfo.plateNumber
+                    }
+                    onChange={(e) =>
+                      setAssignmentData((prev) => ({
+                        ...prev,
+                        deliveryPersonnel: {
+                          ...prev.deliveryPersonnel,
+                          vehicleInfo: {
+                            ...prev.deliveryPersonnel.vehicleInfo,
+                            plateNumber: e.target.value,
+                          },
+                        },
+                      }))
+                    }
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Note */}
+            <div>
+              <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Assignment Note
+              </Label>
+              <Textarea
+                placeholder="Optional note about the assignment"
+                value={assignmentData.note}
+                onChange={(e) =>
+                  setAssignmentData((prev) => ({
+                    ...prev,
+                    note: e.target.value,
+                  }))
+                }
+                rows={3}
+              />
+            </div>
+
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setIsAssignmentModalOpen(false);
+                  resetAssignmentForm();
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={
+                  selectedParcel?.deliveryPersonnel
+                    ? handleReassignDeliveryPersonnel
+                    : handleAssignDeliveryPersonnel
+                }
+                disabled={isAssigning}
+                className="bg-purple-600 hover:bg-purple-700"
+              >
+                {isAssigning
+                  ? "Processing..."
+                  : selectedParcel?.deliveryPersonnel
+                    ? "Reassign Personnel"
+                    : "Assign Personnel"}
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>

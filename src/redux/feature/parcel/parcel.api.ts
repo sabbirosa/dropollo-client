@@ -109,12 +109,25 @@ export const parcelApi = baseApi.injectEndpoints({
 
     assignDeliveryPersonnel: builder.mutation<
       IParcel,
-      { id: string; deliveryPersonnel: { id: string; name: string } }
+      { 
+        id: string; 
+        deliveryPersonnel: {
+          name: string;
+          email: string;
+          phone: string;
+          employeeId?: string;
+          vehicleInfo?: {
+            type: string;
+            plateNumber: string;
+          };
+        };
+        note?: string;
+      }
     >({
-      query: ({ id, deliveryPersonnel }) => ({
+      query: ({ id, deliveryPersonnel, note }) => ({
         url: `/parcel/${id}/assign`,
         method: "PUT",
-        body: { deliveryPersonnel },
+        body: { deliveryPersonnel, note },
       }),
       invalidatesTags: ["PARCEL"],
     }),
