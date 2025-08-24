@@ -1,20 +1,20 @@
 import { Button } from "@/components/ui/button";
 import {
-    NavigationMenu,
-    NavigationMenuItem,
-    NavigationMenuLink,
-    NavigationMenuList,
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
 } from "@/components/ui/navigation-menu";
 import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
 } from "@/components/ui/popover";
 import { navigationLinks } from "@/config/navigation";
 import {
-    authApi,
-    useLogoutMutation,
-    useUserInfoQuery,
+  authApi,
+  useLogoutMutation,
+  useUserInfoQuery,
 } from "@/redux/feature/auth/auth.api";
 import { useAppDispatch } from "@/redux/hook";
 import { Link } from "react-router";
@@ -110,9 +110,8 @@ export default function Component() {
           </Popover>
           {/* Main nav */}
           <div className="flex items-center gap-6">
-            <Link to="/" className="text-primary hover:text-primary/90">
-              <Logo />
-            </Link>
+            <Logo />
+
             {/* Navigation menu */}
             <NavigationMenu className="max-md:hidden">
               <NavigationMenuList className="gap-2">

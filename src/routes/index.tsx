@@ -2,8 +2,13 @@ import App from "@/App";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { role } from "@/constant/role";
 import About from "@/pages/About";
+import Contact from "@/pages/Contact";
+import Home from "@/pages/Home";
 import Login from "@/pages/Login";
+import Pricing from "@/pages/Pricing";
 import Registration from "@/pages/Registration";
+import Services from "@/pages/Services";
+import TrackParcel from "@/pages/TrackParcel";
 import Unauthorized from "@/pages/Unauthorized";
 import type { TRole } from "@/types";
 import { generateRoutes } from "@/utils/generateRoutes";
@@ -19,8 +24,28 @@ export const router = createBrowserRouter([
     path: "/",
     children: [
       {
+        index: true,
+        Component: Home,
+      },
+      {
         Component: About,
         path: "about",
+      },
+      {
+        Component: Services,
+        path: "services",
+      },
+      {
+        Component: Pricing,
+        path: "pricing",
+      },
+      {
+        Component: TrackParcel,
+        path: "track",
+      },
+      {
+        Component: Contact,
+        path: "contact",
       },
     ],
   },
