@@ -2,10 +2,9 @@ import type { ISidebarItems } from "@/types";
 import {
   FileText,
   Package,
-
   Settings2,
-
   SquareTerminal,
+  User,
   Users
 } from "lucide-react";
 import { lazy } from "react";
@@ -15,6 +14,7 @@ const UserManagement = lazy(() => import("@/pages/Admin/UserManagement"));
 const ParcelManagement = lazy(() => import("@/pages/Admin/ParcelManagement"));
 const Reports = lazy(() => import("@/pages/Admin/Reports"));
 const Settings = lazy(() => import("@/pages/Admin/Settings"));
+const Profile = lazy(() => import("@/pages/Admin/Profile"));
 
 export const adminSidebarItems: ISidebarItems[] = [
   {
@@ -32,22 +32,13 @@ export const adminSidebarItems: ISidebarItems[] = [
   },
   {
     title: "User Management",
-    url: "#",
+    url: "/admin/user-management",
     icon: Users,
+    isActive: true,
     items: [
       {
         title: "All Users",
         url: "/admin/user-management",
-        component: UserManagement,
-      },
-      {
-        title: "Role Management",
-        url: "/admin/roles",
-        component: UserManagement,
-      },
-      {
-        title: "Permissions",
-        url: "/admin/permissions",
         component: UserManagement,
       },
     ],
@@ -115,6 +106,18 @@ export const adminSidebarItems: ISidebarItems[] = [
         title: "Notifications",
         url: "/admin/notifications",
         component: Settings,
+      },
+    ],
+  },
+  {
+    title: "Account",
+    url: "#",
+    icon: User,
+    items: [
+      {
+        title: "My Profile",
+        url: "/admin/profile",
+        component: Profile,
       },
     ],
   },

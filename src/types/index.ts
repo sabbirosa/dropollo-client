@@ -5,6 +5,8 @@ import type {
   RefAttributes,
 } from "react";
 
+export type { IUser, TRole } from "./user.type";
+
 export interface IResponse<T> {
   statusCode: number;
   success: boolean;
@@ -20,6 +22,7 @@ export interface ISidebarItems {
   >;
   isActive?: boolean;
   items?: ISidebarItem[];
+  component?: ComponentType;
 }
 
 export interface ISidebarItem {
@@ -27,5 +30,3 @@ export interface ISidebarItem {
   url: string;
   component?: ComponentType;
 }
-
-export type TRole = "admin" | "sender" | "receiver";
