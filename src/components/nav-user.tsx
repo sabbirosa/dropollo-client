@@ -1,30 +1,29 @@
 "use client";
 
-import {
-    BadgeCheck,
-    Bell,
-    ChevronsUpDown,
-    LogOut,
-    User
-} from "lucide-react";
+import { BadgeCheck, Bell, ChevronsUpDown, LogOut, User } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuGroup,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
-    useSidebar,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
-import { useLogoutMutation, useUserInfoQuery } from "@/redux/feature/auth/auth.api";
+import {
+  authApi,
+  useLogoutMutation,
+  useUserInfoQuery,
+} from "@/redux/feature/auth/auth.api";
+import { useAppDispatch } from "@/redux/hook";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
 
@@ -44,14 +43,17 @@ export function NavUser({
 
   // const fallbackAvatar = user?.name[0] || "S";
   const avatarFallback = user.name ? user?.name[0] : "D";
-  
+
   // Get user role for dynamic routing
   const userRole = userData?.data?.role?.toLowerCase() || "user";
+
+  const dispatch = useAppDispatch();
 
   const handleLogout = async () => {
     try {
       await logout().unwrap();
       toast.success("Logged out successfully");
+      dispatch(authApi.util.resetApiState());
       navigate("/login");
     } catch {
       toast.error("Logout failed");

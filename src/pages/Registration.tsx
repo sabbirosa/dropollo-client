@@ -1,3 +1,4 @@
+import parcelImg1 from "@/assets/images/parcel-delivery-image1.jpg";
 import Logo from "@/components/layout/Logo";
 import { RegistrationForm } from "@/components/modules/authentication/RegistrationForm";
 import { Button } from "@/components/ui/button";
@@ -64,7 +65,7 @@ export default function Registration() {
       </div>
       <div className="bg-muted relative hidden lg:block">
         <img
-          src="./src/assets/images/parcel-delivery-image1.jpg"
+          src={parcelImg1}
           alt="Image"
           className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
         />
