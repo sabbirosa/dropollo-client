@@ -12,7 +12,6 @@ import { lazy } from "react";
 const Analytics = lazy(() => import("@/pages/Admin/Analytics"));
 const UserManagement = lazy(() => import("@/pages/Admin/UserManagement"));
 const ParcelManagement = lazy(() => import("@/pages/Admin/ParcelManagement"));
-const Reports = lazy(() => import("@/pages/Admin/Reports"));
 const Profile = lazy(() => import("@/pages/Admin/Profile"));
 const Account = lazy(() => import("@/pages/Shared/Account"));
 const Notifications = lazy(() => import("@/pages/Shared/Notifications"));
@@ -26,9 +25,9 @@ export const adminSidebarItems: ISidebarItems[] = [
     isActive: true,
     items: [
       {
-        title: "Reports",
-        url: "/admin/analytics/reports",
-        component: Reports,
+        title: "Analytics",
+        url: "/admin/analytics",
+        component: Analytics,
       },
     ],
   },

@@ -127,7 +127,7 @@ export const parcelApi = baseApi.injectEndpoints({
       invalidatesTags: ["PARCEL"],
     }),
 
-    getParcelStats: builder.query<IParcelStats, void>({
+    getParcelStats: builder.query<IResponse<IParcelStats>, void>({
       query: () => "/parcel/stats",
       providesTags: ["PARCEL"],
     }),

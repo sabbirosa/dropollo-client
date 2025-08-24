@@ -22,7 +22,7 @@ export const quickActions = [
     role: role.RECEIVER,
   },
   {
-    href: "/admin/analytics/reports",
+    href: "/admin/analytics",
     label: "View Analytics",
     role: role.ADMIN,
   },

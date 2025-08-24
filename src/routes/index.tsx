@@ -30,7 +30,7 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Navigate to="/admin/analytics/reports" />,
+        element: <Navigate to="/admin/analytics" />,
       },
       ...generateRoutes(adminSidebarItems),
     ],
