@@ -30,6 +30,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -408,16 +409,90 @@ export default function IncomingParcels() {
       {/* Parcels Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Incoming Parcels ({parcels.length})</CardTitle>
+          <CardTitle>
+            {isLoading ? (
+              <Skeleton className="h-8 w-48" />
+            ) : (
+              `Incoming Parcels (${parcels.length})`
+            )}
+          </CardTitle>
           <CardDescription>
-            {isLoading
-              ? "Loading parcels..."
-              : `Showing ${parcels.length} parcels`}
+            {isLoading ? (
+              <Skeleton className="h-6 w-32" />
+            ) : (
+              `Showing ${parcels.length} parcels`
+            )}
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0">
           {isLoading ? (
-            <div className="text-center py-8">Loading parcels...</div>
+            <div className="overflow-x-auto">
+              <div className="min-w-[1000px]">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-gray-50 dark:bg-gray-800">
+                    <TableHead className="font-semibold text-gray-900 dark:text-white">
+                      Tracking ID
+                    </TableHead>
+                    <TableHead className="font-semibold text-gray-900 dark:text-white">
+                      Sender
+                    </TableHead>
+                    <TableHead className="font-semibold text-gray-900 dark:text-white">
+                      Type
+                    </TableHead>
+                    <TableHead className="font-semibold text-gray-900 dark:text-white">
+                      Status
+                    </TableHead>
+                    <TableHead className="font-semibold text-gray-900 dark:text-white">
+                      Urgency
+                    </TableHead>
+                    <TableHead className="font-semibold text-gray-900 dark:text-white">
+                      Total Fee
+                    </TableHead>
+                    <TableHead className="font-semibold text-gray-900 dark:text-white">
+                      Actions
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {Array.from({ length: 5 }).map((_, index) => (
+                    <TableRow key={index}>
+                      <TableCell className="py-4">
+                        <Skeleton className="h-6 w-24 bg-gray-200 dark:bg-gray-700" />
+                      </TableCell>
+                      <TableCell className="py-4">
+                        <div className="space-y-2">
+                          <Skeleton className="h-4 w-20 bg-gray-200 dark:bg-gray-700" />
+                          <Skeleton className="h-3 w-32 bg-gray-200 dark:bg-gray-700" />
+                        </div>
+                      </TableCell>
+                      <TableCell className="py-4">
+                        <Skeleton className="h-4 w-16 bg-gray-200 dark:bg-gray-700" />
+                      </TableCell>
+                      <TableCell className="py-4">
+                        <div className="flex items-center gap-2">
+                          <Skeleton className="h-6 w-20 bg-gray-200 dark:bg-gray-700" />
+                        </div>
+                      </TableCell>
+                      <TableCell className="py-4">
+                        <Skeleton className="h-6 w-16 bg-gray-200 dark:bg-gray-700" />
+                      </TableCell>
+                      <TableCell className="py-4">
+                        <Skeleton className="h-4 w-20 bg-gray-200 dark:bg-gray-700" />
+                      </TableCell>
+                      <TableCell className="py-4">
+                        <div className="flex gap-2">
+                          <Skeleton className="h-8 w-8 bg-gray-200 dark:bg-gray-700" />
+                          <Skeleton className="h-8 w-8 bg-gray-200 dark:bg-gray-700" />
+                          <Skeleton className="h-8 w-8 bg-gray-200 dark:bg-gray-700" />
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              </div>
+            </div>
           ) : parcels.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
               No incoming parcels found.{" "}

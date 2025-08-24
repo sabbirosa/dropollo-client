@@ -32,6 +32,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -331,22 +332,84 @@ export function UserTable() {
       {/* Users Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Users ({users.length})</CardTitle>
+          <CardTitle>
+            {isLoading ? (
+              <Skeleton className="h-8 w-32" />
+            ) : (
+              `Users (${users.length})`
+            )}
+          </CardTitle>
           <CardDescription>
-            {isLoading
-              ? "Loading users..."
-              : `Showing ${users.length} users`}
+            {isLoading ? (
+              <Skeleton className="h-6 w-32" />
+            ) : (
+              `Showing ${users.length} users`
+            )}
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0">
           {isLoading ? (
-            <div className="text-center py-8">Loading users...</div>
+            <div className="overflow-x-auto">
+              <div className="min-w-[1000px]">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-gray-50 dark:bg-gray-800">
+                    <TableHead className="w-12 font-semibold text-gray-900 dark:text-white">Avatar</TableHead>
+                    <TableHead className="w-40 font-semibold text-gray-900 dark:text-white">Name</TableHead>
+                    <TableHead className="w-48 font-semibold text-gray-900 dark:text-white">Email</TableHead>
+                    <TableHead className="w-32 font-semibold text-gray-900 dark:text-white">Role</TableHead>
+                    <TableHead className="w-32 font-semibold text-gray-900 dark:text-white">Status</TableHead>
+                    <TableHead className="w-32 font-semibold text-gray-900 dark:text-white">Created</TableHead>
+                    <TableHead className="w-40 font-semibold text-gray-900 dark:text-white">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {Array.from({ length: 5 }).map((_, index) => (
+                    <TableRow key={index}>
+                      <TableCell className="py-4">
+                        <Skeleton className="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-700" />
+                      </TableCell>
+                      <TableCell className="py-4">
+                        <div className="space-y-2">
+                          <Skeleton className="h-4 w-24 bg-gray-200 dark:bg-gray-700" />
+                          <Skeleton className="h-3 w-20 bg-gray-200 dark:bg-gray-700" />
+                        </div>
+                      </TableCell>
+                      <TableCell className="py-4">
+                        <Skeleton className="h-4 w-32 bg-gray-200 dark:bg-gray-700" />
+                      </TableCell>
+                      <TableCell className="py-4">
+                        <Skeleton className="h-6 w-20 bg-gray-200 dark:bg-gray-700" />
+                      </TableCell>
+                      <TableCell className="py-4">
+                        <div className="flex items-center gap-2">
+                          <Skeleton className="h-2 w-2 rounded-full bg-gray-200 dark:bg-gray-700" />
+                          <Skeleton className="h-6 w-16 bg-gray-200 dark:bg-gray-700" />
+                        </div>
+                      </TableCell>
+                      <TableCell className="py-4">
+                        <Skeleton className="h-4 w-24 bg-gray-200 dark:bg-gray-700" />
+                      </TableCell>
+                      <TableCell className="py-4">
+                        <div className="flex gap-2">
+                          <Skeleton className="h-8 w-8 bg-gray-200 dark:bg-gray-700" />
+                          <Skeleton className="h-8 w-8 bg-gray-200 dark:bg-gray-700" />
+                          <Skeleton className="h-8 w-8 bg-gray-200 dark:bg-gray-700" />
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              </div>
+            </div>
           ) : users.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
               No users found. {hasFilters && "Try adjusting your filters."}
             </div>
           ) : (
-            <div className="w-full overflow-x-auto">
+            <div className="overflow-x-auto">
+              <div className="min-w-[1000px]">
               <Table>
                 <TableHeader>
                   <TableRow className="bg-gray-50 dark:bg-gray-800">
@@ -477,6 +540,7 @@ export function UserTable() {
                   ))}
                 </TableBody>
               </Table>
+              </div>
             </div>
           )}
 

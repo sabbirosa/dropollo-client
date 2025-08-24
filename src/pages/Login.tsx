@@ -1,6 +1,7 @@
 import Logo from "@/components/layout/Logo";
 import { LoginForm } from "@/components/modules/authentication/LoginForm";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useUserInfoQuery } from "@/redux/feature/auth/auth.api";
 import { navigateToDashboard } from "@/utils/navigationHelpers";
 import { ArrowLeft } from "lucide-react";
@@ -11,7 +12,28 @@ export default function Login() {
   const navigate = useNavigate();
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-6">
+        <div className="w-full max-w-md space-y-6">
+                    {/* Header Skeleton */}
+          <div className="text-center space-y-2">
+            <Skeleton className="h-8 w-32 mx-auto bg-gray-200 dark:bg-gray-700" />
+            <Skeleton className="h-4 w-48 mx-auto bg-gray-200 dark:bg-gray-700" />
+          </div>
+          
+          {/* Form Skeleton */}
+          <div className="space-y-4">
+            {Array.from({ length: 2 }).map((_, i) => (
+              <div key={i} className="space-y-2">
+                <Skeleton className="h-4 w-16 bg-gray-200 dark:bg-gray-700" />
+                <Skeleton className="h-10 w-full bg-gray-200 dark:bg-gray-700" />
+              </div>
+            ))}
+            <Skeleton className="h-10 w-full bg-gray-200 dark:bg-gray-700" />
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (data?.data?.role && !isLoading) {

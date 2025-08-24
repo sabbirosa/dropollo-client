@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useUserInfoQuery } from "@/redux/feature/auth/auth.api";
 import { formatDate } from "@/utils/parcelUtils";
 import { Calendar, Key, Mail, Phone, Settings, Shield, User, UserCheck } from "lucide-react";
@@ -14,8 +15,75 @@ export default function Account() {
 
   if (isLoading) {
     return (
-      <div className="p-6">
-        <div className="text-center py-8">Loading account information...</div>
+      <div className="p-6 max-w-4xl mx-auto">
+        {/* Page Header Skeleton */}
+        <div className="mb-6 space-y-2">
+          <Skeleton className="h-8 w-48 bg-gray-200 dark:bg-gray-700" />
+          <Skeleton className="h-4 w-96 bg-gray-200 dark:bg-gray-700" />
+        </div>
+
+        <div className="space-y-6">
+          {/* Account Overview Skeleton */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <Skeleton className="h-5 w-5 bg-gray-200 dark:bg-gray-700" />
+                <Skeleton className="h-6 w-32 bg-gray-200 dark:bg-gray-700" />
+              </div>
+              <Skeleton className="h-4 w-48 bg-gray-200 dark:bg-gray-700" />
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i} className="flex items-center gap-3">
+                      <Skeleton className="h-8 w-8 rounded-full bg-gray-200 dark:bg-gray-700" />
+                      <div className="space-y-2">
+                        <Skeleton className="h-3 w-20 bg-gray-200 dark:bg-gray-700" />
+                        <Skeleton className="h-4 w-32 bg-gray-200 dark:bg-gray-700" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="space-y-4">
+                  {Array.from({ length: 2 }).map((_, i) => (
+                    <div key={i} className="flex items-center gap-3">
+                      <Skeleton className="h-8 w-8 rounded-full bg-gray-200 dark:bg-gray-700" />
+                      <div className="space-y-2">
+                        <Skeleton className="h-3 w-20 bg-gray-200 dark:bg-gray-700" />
+                        <Skeleton className="h-6 w-16 bg-gray-200 dark:bg-gray-700" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Security Settings Skeleton */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <Skeleton className="h-5 w-5 bg-gray-200 dark:bg-gray-700" />
+                <Skeleton className="h-6 w-40 bg-gray-200 dark:bg-gray-700" />
+              </div>
+              <Skeleton className="h-4 w-64 bg-gray-200 dark:bg-gray-700" />
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {Array.from({ length: 2 }).map((_, i) => (
+                  <div key={i} className="space-y-2">
+                    <Skeleton className="h-4 w-24 bg-gray-200 dark:bg-gray-700" />
+                    <Skeleton className="h-10 w-full bg-gray-200 dark:bg-gray-700" />
+                  </div>
+                ))}
+                <div className="pt-4">
+                  <Skeleton className="h-10 w-32 bg-gray-200 dark:bg-gray-700" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     );
   }

@@ -85,18 +85,6 @@ export const formatCurrency = (amount: number) => {
   }).format(amount);
 };
 
-export const getParcelTypeIcon = (type: string) => {
-  const icons = {
-    document: "📄",
-    package: "📦",
-    fragile: "⚠️",
-    electronics: "💻",
-    other: "📋",
-  };
-
-  return icons[type as keyof typeof icons] || "📋";
-};
-
 export const getUrgencyColor = (urgency: string) => {
   const colors = {
     standard: "bg-gray-100 text-gray-800",

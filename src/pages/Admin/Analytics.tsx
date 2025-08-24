@@ -13,6 +13,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useGetParcelStatsQuery } from "@/redux/feature/parcel/parcel.api";
 import { formatCurrency } from "@/utils/parcelUtils";
 import {
@@ -51,10 +52,73 @@ export default function Analytics() {
 
   if (isLoading) {
     return (
-      <div className="p-6">
-        <div className="text-center py-8">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p>Loading analytics...</p>
+      <div className="p-6 space-y-6">
+        {/* Page Header Skeleton */}
+        <div className="space-y-2">
+          <Skeleton className="h-8 w-48 bg-gray-200 dark:bg-gray-700" />
+          <Skeleton className="h-4 w-96 bg-gray-200 dark:bg-gray-700" />
+        </div>
+
+        {/* Stats Cards Skeleton */}
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Card key={i}>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <Skeleton className="h-4 w-20 bg-gray-200 dark:bg-gray-700" />
+                <Skeleton className="h-4 w-4 bg-gray-200 dark:bg-gray-700" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-8 w-16 mb-1 bg-gray-200 dark:bg-gray-700" />
+                <Skeleton className="h-3 w-24 bg-gray-200 dark:bg-gray-700" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* Charts Skeleton */}
+        <div className="grid gap-6 md:grid-cols-2">
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-6 w-32 bg-gray-200 dark:bg-gray-700" />
+              <Skeleton className="h-4 w-48 bg-gray-200 dark:bg-gray-700" />
+            </CardHeader>
+            <CardContent>
+              <Skeleton className="h-64 w-full bg-gray-200 dark:bg-gray-700" />
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-6 w-32 bg-gray-200 dark:bg-gray-700" />
+              <Skeleton className="h-4 w-48 bg-gray-200 dark:bg-gray-700" />
+            </CardHeader>
+            <CardContent>
+              <Skeleton className="h-64 w-full bg-gray-200 dark:bg-gray-700" />
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Additional Charts Skeleton */}
+        <div className="grid gap-6 md:grid-cols-2">
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-6 w-32 bg-gray-200 dark:bg-gray-700" />
+              <Skeleton className="h-4 w-48 bg-gray-200 dark:bg-gray-700" />
+            </CardHeader>
+            <CardContent>
+              <Skeleton className="h-64 w-full bg-gray-200 dark:bg-gray-700" />
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-6 w-32 bg-gray-200 dark:bg-gray-700" />
+              <Skeleton className="h-4 w-48 bg-gray-200 dark:bg-gray-700" />
+            </CardHeader>
+            <CardContent>
+              <Skeleton className="h-64 w-full bg-gray-200 dark:bg-gray-700" />
+            </CardContent>
+          </Card>
         </div>
       </div>
     );

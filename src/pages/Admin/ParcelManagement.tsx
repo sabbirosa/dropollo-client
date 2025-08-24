@@ -30,6 +30,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -57,7 +58,6 @@ import {
 } from "@/utils/parcelUtils";
 import { format } from "date-fns";
 import {
-  AlertTriangle,
   CalendarIcon,
   CheckCircle,
   ChevronLeft,
@@ -340,21 +340,6 @@ export default function ParcelManagement() {
     (p) => p.currentStatus === ParcelStatus.DELIVERED
   ).length;
   const blockedParcels = parcels.filter((p) => p.isBlocked).length;
-
-  const getStatusIcon = (status: ParcelStatus) => {
-    const icons = {
-      [ParcelStatus.REQUESTED]: <Clock className="h-4 w-4" />,
-      [ParcelStatus.APPROVED]: <CheckCircle className="h-4 w-4" />,
-      [ParcelStatus.PICKED_UP]: <Truck className="h-4 w-4" />,
-      [ParcelStatus.IN_TRANSIT]: <Truck className="h-4 w-4" />,
-      [ParcelStatus.OUT_FOR_DELIVERY]: <Truck className="h-4 w-4" />,
-      [ParcelStatus.DELIVERED]: <CheckCircle className="h-4 w-4" />,
-      [ParcelStatus.CANCELLED]: <AlertTriangle className="h-4 w-4" />,
-      [ParcelStatus.RETURNED]: <AlertTriangle className="h-4 w-4" />,
-      [ParcelStatus.FAILED_DELIVERY]: <AlertTriangle className="h-4 w-4" />,
-    };
-    return icons[status] || <Clock className="h-4 w-4" />;
-  };
 
   return (
     <div className="p-6">
@@ -668,426 +653,504 @@ export default function ParcelManagement() {
       {/* Parcels Table */}
       <Card>
         <CardHeader>
-          <CardTitle>All Parcels ({parcels.length})</CardTitle>
+          <CardTitle>
+            {isLoading ? (
+              <Skeleton className="h-8 w-48" />
+            ) : (
+              `All Parcels (${parcels.length})`
+            )}
+          </CardTitle>
           <CardDescription>
-            {isLoading
-              ? "Loading parcels..."
-              : `Showing ${parcels.length} parcels`}
+            {isLoading ? (
+              <Skeleton className="h-8 w-32" />
+            ) : (
+              `Showing ${parcels.length} parcels`
+            )}
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0">
           {isLoading ? (
-            <div className="text-center py-8">Loading parcels...</div>
+            <div className="overflow-x-auto">
+              <div className="min-w-[1200px]">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-gray-50 dark:bg-gray-800">
+                      <TableHead className="w-32 font-semibold text-gray-900 dark:text-white">
+                        Tracking ID
+                      </TableHead>
+                      <TableHead className="w-48 font-semibold text-gray-900 dark:text-white">
+                        Sender
+                      </TableHead>
+                      <TableHead className="w-48 font-semibold text-gray-900 dark:text-white">
+                        Receiver
+                      </TableHead>
+                      <TableHead className="w-32 font-semibold text-gray-900 dark:text-white">
+                        Type
+                      </TableHead>
+                      <TableHead className="w-32 font-semibold text-gray-900 dark:text-white">
+                        Status
+                      </TableHead>
+                      <TableHead className="w-32 font-semibold text-gray-900 dark:text-white">
+                        Urgency
+                      </TableHead>
+                      <TableHead className="w-32 font-semibold text-gray-900 dark:text-white">
+                        Total Fee
+                      </TableHead>
+                      <TableHead className="w-40 font-semibold text-gray-900 dark:text-white">
+                        Actions
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {Array.from({ length: 5 }).map((_, index) => (
+                      <TableRow key={index}>
+                                              <TableCell className="py-4">
+                        <Skeleton className="h-6 w-24 bg-gray-200 dark:bg-gray-700" />
+                      </TableCell>
+                      <TableCell className="py-4">
+                        <div className="space-y-2">
+                          <Skeleton className="h-4 w-20 bg-gray-200 dark:bg-gray-700" />
+                          <Skeleton className="h-3 w-32 bg-gray-200 dark:bg-gray-700" />
+                        </div>
+                      </TableCell>
+                      <TableCell className="py-4">
+                        <div className="space-y-2">
+                          <Skeleton className="h-4 w-20 bg-gray-200 dark:bg-gray-700" />
+                          <Skeleton className="h-3 w-32 bg-gray-200 dark:bg-gray-700" />
+                        </div>
+                      </TableCell>
+                      <TableCell className="py-4">
+                        <Skeleton className="h-4 w-16 bg-gray-200 dark:bg-gray-700" />
+                      </TableCell>
+                      <TableCell className="py-4">
+                        <Skeleton className="h-6 w-20 bg-gray-200 dark:bg-gray-700" />
+                      </TableCell>
+                      <TableCell className="py-4">
+                        <Skeleton className="h-6 w-16 bg-gray-200 dark:bg-gray-700" />
+                      </TableCell>
+                      <TableCell className="py-4">
+                        <Skeleton className="h-4 w-20 bg-gray-200 dark:bg-gray-700" />
+                      </TableCell>
+                      <TableCell className="py-4">
+                        <div className="flex gap-2">
+                          <Skeleton className="h-8 w-8 bg-gray-200 dark:bg-gray-700" />
+                          <Skeleton className="h-8 w-8 bg-gray-200 dark:bg-gray-700" />
+                          <Skeleton className="h-8 w-8 bg-gray-200 dark:bg-gray-700" />
+                        </div>
+                      </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
           ) : parcels.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
               No parcels found. {hasFilters && "Try adjusting your filters."}
             </div>
           ) : (
-            <div className="w-full overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-gray-50 dark:bg-gray-800">
-                    <TableHead className="font-semibold text-gray-900 dark:text-white">
-                      Tracking ID
-                    </TableHead>
-                    <TableHead className="font-semibold text-gray-900 dark:text-white">
-                      Sender
-                    </TableHead>
-                    <TableHead className="font-semibold text-gray-900 dark:text-white">
-                      Receiver
-                    </TableHead>
-                    <TableHead className="font-semibold text-gray-900 dark:text-white">
-                      Type
-                    </TableHead>
-                    <TableHead className="font-semibold text-gray-900 dark:text-white">
-                      Status
-                    </TableHead>
-                    <TableHead className="font-semibold text-gray-900 dark:text-white">
-                      Urgency
-                    </TableHead>
-                    <TableHead className="font-semibold text-gray-900 dark:text-white">
-                      Total Fee
-                    </TableHead>
-                    <TableHead className="font-semibold text-gray-900 dark:text-white">
-                      Actions
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {parcels.map((parcel) => (
-                    <TableRow
-                      key={parcel._id}
-                      className={`hover:bg-gray-50 dark:hover:bg-gray-800 ${parcel.isBlocked ? "bg-red-50 dark:bg-red-900/20" : ""}`}
-                    >
-                      <TableCell className="font-mono text-sm py-4">
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium">
-                            {parcel.trackingId}
-                          </span>
-                          {parcel.isBlocked && (
-                            <Badge
-                              variant="destructive"
-                              className="text-xs px-2 py-1"
-                            >
-                              Blocked
-                            </Badge>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell className="py-4">
-                        <div className="space-y-1">
-                          <div className="font-medium text-gray-900 dark:text-white">
-                            {parcel.sender.name}
-                          </div>
-                          <div className="text-sm text-gray-500 dark:text-gray-400">
-                            {parcel.sender.email}
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell className="py-4">
-                        <div className="space-y-1">
-                          <div className="font-medium text-gray-900 dark:text-white">
-                            {parcel.receiver.name}
-                          </div>
-                          <div className="text-sm text-gray-500 dark:text-gray-400">
-                            {parcel.receiver.email}
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell className="py-4">
-                        <div className="flex items-center gap-2">
-                          <span className="capitalize font-medium text-gray-900 dark:text-white">
-                            {parcel.parcelDetails.type}
-                          </span>
-                        </div>
-                      </TableCell>
-                      <TableCell className="py-4">
-                        <div className="flex items-center gap-2">
-                          <span className="text-gray-600 dark:text-gray-400">
-                            {getStatusIcon(parcel.currentStatus)}
-                          </span>
-                          <Badge
-                            className={`${getStatusColor(parcel.currentStatus)} font-medium`}
-                          >
-                            {getStatusText(parcel.currentStatus)}
-                          </Badge>
-                          {parcel.deliveryPersonnel && (
-                            <div className="flex items-center gap-1 ml-2">
-                              <Truck className="h-3 w-3 text-purple-600" />
-                              <span className="text-xs text-purple-600 font-medium">
-                                Assigned
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell className="py-4">
-                        <Badge
-                          className={`${getUrgencyColor(
-                            parcel.deliveryInfo.urgency
-                          )} font-medium`}
-                        >
-                          {parcel.deliveryInfo.urgency}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="py-4 font-medium text-gray-900 dark:text-white">
-                        {formatCurrency(parcel.pricing.totalFee)}
-                      </TableCell>
-                      <TableCell className="py-4">
-                        <div className="flex items-center gap-1">
-                          <Dialog>
-                            <DialogTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => setSelectedParcel(parcel)}
-                                className="h-8 w-8 p-0 hover:bg-blue-100 dark:hover:bg-blue-900/20"
+            <div className="overflow-x-auto">
+              <div className="min-w-[1200px]">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-gray-50 dark:bg-gray-800">
+                      <TableHead className="w-32 font-semibold text-gray-900 dark:text-white">
+                        Tracking ID
+                      </TableHead>
+                      <TableHead className="w-48 font-semibold text-gray-900 dark:text-white">
+                        Sender
+                      </TableHead>
+                      <TableHead className="w-48 font-semibold text-gray-900 dark:text-white">
+                        Receiver
+                      </TableHead>
+                      <TableHead className="w-32 font-semibold text-gray-900 dark:text-white">
+                        Type
+                      </TableHead>
+                      <TableHead className="w-32 font-semibold text-gray-900 dark:text-white">
+                        Status
+                      </TableHead>
+                      <TableHead className="w-32 font-semibold text-gray-900 dark:text-white">
+                        Urgency
+                      </TableHead>
+                      <TableHead className="w-32 font-semibold text-gray-900 dark:text-white">
+                        Total Fee
+                      </TableHead>
+                      <TableHead className="w-40 font-semibold text-gray-900 dark:text-white">
+                        Actions
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {parcels.map((parcel) => (
+                      <TableRow
+                        key={parcel._id}
+                        className={`hover:bg-gray-50 dark:hover:bg-gray-800 ${parcel.isBlocked ? "bg-red-50 dark:bg-red-900/20" : ""}`}
+                      >
+                        <TableCell className="font-mono text-sm py-4">
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium">
+                              {parcel.trackingId}
+                            </span>
+                            {parcel.isBlocked && (
+                              <Badge
+                                variant="destructive"
+                                className="text-xs px-2 py-1"
                               >
-                                <Eye className="h-4 w-4 text-blue-600" />
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent className="max-w-2xl max-h-[calc(100vh-4rem)] overflow-y-auto">
-                              <DialogHeader>
-                                <DialogTitle>Parcel Details</DialogTitle>
-                                <DialogDescription>
-                                  Detailed information about parcel{" "}
-                                  {parcel.trackingId}
-                                </DialogDescription>
-                              </DialogHeader>
-                              <div className="space-y-4">
-                                <div className="grid grid-cols-2 gap-4">
+                                Blocked
+                              </Badge>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell className="py-4">
+                          <div className="space-y-1">
+                            <div className="font-medium text-gray-900 dark:text-white">
+                              {parcel.sender.name}
+                            </div>
+                            <div className="text-sm text-gray-500 dark:text-gray-400">
+                              {parcel.sender.email}
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell className="py-4">
+                          <div className="space-y-1">
+                            <div className="font-medium text-gray-900 dark:text-white">
+                              {parcel.receiver.name}
+                            </div>
+                            <div className="text-sm text-gray-500 dark:text-gray-400">
+                              {parcel.receiver.email}
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell className="py-4">
+                          <div className="flex items-center gap-2">
+                            <span className="capitalize font-medium text-gray-900 dark:text-white">
+                              {parcel.parcelDetails.type}
+                            </span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="py-4">
+                          <div className="flex items-center gap-2">
+                            <Badge
+                              className={`${getStatusColor(parcel.currentStatus)} font-medium`}
+                            >
+                              {getStatusText(parcel.currentStatus)}
+                            </Badge>
+                          </div>
+                        </TableCell>
+                        <TableCell className="py-4">
+                          <Badge
+                            className={`${getUrgencyColor(
+                              parcel.deliveryInfo.urgency
+                            )} font-medium`}
+                          >
+                            {parcel.deliveryInfo.urgency}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="py-4 font-medium text-gray-900 dark:text-white">
+                          {formatCurrency(parcel.pricing.totalFee)}
+                        </TableCell>
+                        <TableCell className="py-4">
+                          <div className="flex items-center gap-1">
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => setSelectedParcel(parcel)}
+                                  className="h-8 w-8 p-0 hover:bg-blue-100 dark:hover:bg-blue-900/20"
+                                >
+                                  <Eye className="h-4 w-4 text-blue-600" />
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent className="max-w-2xl max-h-[calc(100vh-4rem)] overflow-y-auto">
+                                <DialogHeader>
+                                  <DialogTitle>Parcel Details</DialogTitle>
+                                  <DialogDescription>
+                                    Detailed information about parcel{" "}
+                                    {parcel.trackingId}
+                                  </DialogDescription>
+                                </DialogHeader>
+                                <div className="space-y-4">
+                                  <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                      <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        Tracking ID
+                                      </Label>
+                                      <p className="font-mono text-sm text-gray-900 dark:text-white">
+                                        {parcel.trackingId}
+                                      </p>
+                                    </div>
+                                    <div>
+                                      <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        Status
+                                      </Label>
+                                      <Badge
+                                        className={getStatusColor(
+                                          parcel.currentStatus
+                                        )}
+                                      >
+                                        {getStatusText(parcel.currentStatus)}
+                                      </Badge>
+                                    </div>
+                                  </div>
+
                                   <div>
                                     <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                      Tracking ID
+                                      Receiver
                                     </Label>
-                                    <p className="font-mono text-sm text-gray-900 dark:text-white">
-                                      {parcel.trackingId}
-                                    </p>
+                                    <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-md">
+                                      <p className="font-medium text-gray-900 dark:text-white">
+                                        {parcel.receiver.name}
+                                      </p>
+                                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                                        {parcel.receiver.email}
+                                      </p>
+                                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                                        {parcel.receiver.phone}
+                                      </p>
+                                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                                        {parcel.receiver.address.street},{" "}
+                                        {parcel.receiver.address.city},{" "}
+                                        {parcel.receiver.address.state}{" "}
+                                        {parcel.receiver.address.zipCode},{" "}
+                                        {parcel.receiver.address.country}
+                                      </p>
+                                    </div>
                                   </div>
+
                                   <div>
                                     <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                      Status
+                                      Parcel Details
                                     </Label>
-                                    <Badge
-                                      className={getStatusColor(
-                                        parcel.currentStatus
-                                      )}
-                                    >
-                                      {getStatusText(parcel.currentStatus)}
-                                    </Badge>
-                                  </div>
-                                </div>
-
-                                <div>
-                                  <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Receiver
-                                  </Label>
-                                  <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-md">
-                                    <p className="font-medium text-gray-900 dark:text-white">
-                                      {parcel.receiver.name}
-                                    </p>
-                                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                                      {parcel.receiver.email}
-                                    </p>
-                                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                                      {parcel.receiver.phone}
-                                    </p>
-                                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                                      {parcel.receiver.address.street},{" "}
-                                      {parcel.receiver.address.city},{" "}
-                                      {parcel.receiver.address.state}{" "}
-                                      {parcel.receiver.address.zipCode},{" "}
-                                      {parcel.receiver.address.country}
-                                    </p>
-                                  </div>
-                                </div>
-
-                                <div>
-                                  <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Parcel Details
-                                  </Label>
-                                  <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-md">
-                                    <p className="text-sm text-gray-900 dark:text-white">
-                                      <span className="font-medium">Type:</span>{" "}
-                                      {parcel.parcelDetails.type}
-                                    </p>
-                                    <p className="text-sm text-gray-900 dark:text-white">
-                                      <span className="font-medium">
-                                        Weight:
-                                      </span>{" "}
-                                      {parcel.parcelDetails.weight} kg
-                                    </p>
-                                    <p className="text-sm text-gray-900 dark:text-white">
-                                      <span className="font-medium">
-                                        Description:
-                                      </span>{" "}
-                                      {parcel.parcelDetails.description}
-                                    </p>
-                                    {parcel.parcelDetails.value && (
+                                    <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-md">
                                       <p className="text-sm text-gray-900 dark:text-white">
                                         <span className="font-medium">
-                                          Value:
+                                          Type:
                                         </span>{" "}
-                                        {formatCurrency(
-                                          parcel.parcelDetails.value
-                                        )}
+                                        {parcel.parcelDetails.type}
                                       </p>
-                                    )}
-                                  </div>
-                                </div>
-
-                                <div>
-                                  <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Pricing
-                                  </Label>
-                                  <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-md">
-                                    <p className="text-sm text-gray-900 dark:text-white">
-                                      <span className="font-medium">
-                                        Base Fee:
-                                      </span>{" "}
-                                      {formatCurrency(parcel.pricing.baseFee)}
-                                    </p>
-                                    <p className="text-sm text-gray-900 dark:text-white">
-                                      <span className="font-medium">
-                                        Weight Fee:
-                                      </span>{" "}
-                                      {formatCurrency(parcel.pricing.weightFee)}
-                                    </p>
-                                    <p className="text-sm text-gray-900 dark:text-white">
-                                      <span className="font-medium">
-                                        Urgency Fee:
-                                      </span>{" "}
-                                      {formatCurrency(
-                                        parcel.pricing.urgencyFee
-                                      )}
-                                    </p>
-                                    <p className="text-sm font-medium text-gray-900 dark:text-white">
-                                      <span className="font-medium">
-                                        Total:
-                                      </span>{" "}
-                                      {formatCurrency(parcel.pricing.totalFee)}
-                                    </p>
-                                  </div>
-                                </div>
-
-                                {/* Delivery Personnel Information */}
-                                <div>
-                                  <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Delivery Personnel
-                                  </Label>
-                                  <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-md">
-                                    {parcel.deliveryPersonnel ? (
-                                      <div className="space-y-2">
+                                      <p className="text-sm text-gray-900 dark:text-white">
+                                        <span className="font-medium">
+                                          Weight:
+                                        </span>{" "}
+                                        {parcel.parcelDetails.weight} kg
+                                      </p>
+                                      <p className="text-sm text-gray-900 dark:text-white">
+                                        <span className="font-medium">
+                                          Description:
+                                        </span>{" "}
+                                        {parcel.parcelDetails.description}
+                                      </p>
+                                      {parcel.parcelDetails.value && (
                                         <p className="text-sm text-gray-900 dark:text-white">
                                           <span className="font-medium">
-                                            Name:
+                                            Value:
                                           </span>{" "}
-                                          {parcel.deliveryPersonnel.name}
+                                          {formatCurrency(
+                                            parcel.parcelDetails.value
+                                          )}
                                         </p>
-                                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                                          <span className="font-medium">
-                                            Email:
-                                          </span>{" "}
-                                          {parcel.deliveryPersonnel.email}
-                                        </p>
-                                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                                          <span className="font-medium">
-                                            Phone:
-                                          </span>{" "}
-                                          {parcel.deliveryPersonnel.phone}
-                                        </p>
-                                        {parcel.deliveryPersonnel
-                                          .employeeId && (
+                                      )}
+                                    </div>
+                                  </div>
+
+                                  <div>
+                                    <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                      Pricing
+                                    </Label>
+                                    <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-md">
+                                      <p className="text-sm text-gray-900 dark:text-white">
+                                        <span className="font-medium">
+                                          Base Fee:
+                                        </span>{" "}
+                                        {formatCurrency(parcel.pricing.baseFee)}
+                                      </p>
+                                      <p className="text-sm text-gray-900 dark:text-white">
+                                        <span className="font-medium">
+                                          Weight Fee:
+                                        </span>{" "}
+                                        {formatCurrency(
+                                          parcel.pricing.weightFee
+                                        )}
+                                      </p>
+                                      <p className="text-sm text-gray-900 dark:text-white">
+                                        <span className="font-medium">
+                                          Urgency Fee:
+                                        </span>{" "}
+                                        {formatCurrency(
+                                          parcel.pricing.urgencyFee
+                                        )}
+                                      </p>
+                                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                                        <span className="font-medium">
+                                          Total:
+                                        </span>{" "}
+                                        {formatCurrency(
+                                          parcel.pricing.totalFee
+                                        )}
+                                      </p>
+                                    </div>
+                                  </div>
+
+                                  {/* Delivery Personnel Information */}
+                                  <div>
+                                    <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                      Delivery Personnel
+                                    </Label>
+                                    <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-md">
+                                      {parcel.deliveryPersonnel ? (
+                                        <div className="space-y-2">
+                                          <p className="text-sm text-gray-900 dark:text-white">
+                                            <span className="font-medium">
+                                              Name:
+                                            </span>{" "}
+                                            {parcel.deliveryPersonnel.name}
+                                          </p>
                                           <p className="text-sm text-gray-600 dark:text-gray-400">
                                             <span className="font-medium">
-                                              Employee ID:
+                                              Email:
                                             </span>{" "}
-                                            {
-                                              parcel.deliveryPersonnel
-                                                .employeeId
-                                            }
+                                            {parcel.deliveryPersonnel.email}
                                           </p>
-                                        )}
-                                        {parcel.deliveryPersonnel
-                                          .vehicleInfo && (
-                                          <div className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-700">
+                                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                                            <span className="font-medium">
+                                              Phone:
+                                            </span>{" "}
+                                            {parcel.deliveryPersonnel.phone}
+                                          </p>
+                                          {parcel.deliveryPersonnel
+                                            .employeeId && (
                                             <p className="text-sm text-gray-600 dark:text-gray-400">
                                               <span className="font-medium">
-                                                Vehicle:
+                                                Employee ID:
                                               </span>{" "}
                                               {
                                                 parcel.deliveryPersonnel
-                                                  .vehicleInfo.type
+                                                  .employeeId
                                               }
                                             </p>
-                                            <p className="text-sm text-gray-600 dark:text-gray-400">
-                                              <span className="font-medium">
-                                                Plate:
-                                              </span>{" "}
-                                              {
-                                                parcel.deliveryPersonnel
-                                                  .vehicleInfo.plateNumber
-                                              }
-                                            </p>
-                                          </div>
-                                        )}
-                                      </div>
-                                    ) : (
-                                      <p className="text-sm text-gray-500 dark:text-gray-400 italic">
-                                        No delivery personnel assigned yet
-                                      </p>
-                                    )}
+                                          )}
+                                          {parcel.deliveryPersonnel
+                                            .vehicleInfo && (
+                                            <div className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-700">
+                                              <p className="text-sm text-gray-600 dark:text-gray-400">
+                                                <span className="font-medium">
+                                                  Vehicle:
+                                                </span>{" "}
+                                                {
+                                                  parcel.deliveryPersonnel
+                                                    .vehicleInfo.type
+                                                }
+                                              </p>
+                                              <p className="text-sm text-gray-600 dark:text-gray-400">
+                                                <span className="font-medium">
+                                                  Plate:
+                                                </span>{" "}
+                                                {
+                                                  parcel.deliveryPersonnel
+                                                    .vehicleInfo.plateNumber
+                                                }
+                                              </p>
+                                            </div>
+                                          )}
+                                        </div>
+                                      ) : (
+                                        <p className="text-sm text-gray-500 dark:text-gray-400 italic">
+                                          No delivery personnel assigned yet
+                                        </p>
+                                      )}
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                            </DialogContent>
-                          </Dialog>
+                              </DialogContent>
+                            </Dialog>
 
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                              setSelectedParcel(parcel);
-                              setStatusUpdate({
-                                status: parcel.currentStatus,
-                                location: "",
-                                note: "",
-                              });
-                              setIsStatusModalOpen(true);
-                            }}
-                            className="h-8 w-8 p-0 hover:bg-green-100 dark:hover:bg-green-900/20"
-                          >
-                            <Edit className="h-4 w-4 text-green-600" />
-                          </Button>
-
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                              setSelectedParcel(parcel);
-                              setIsBlockModalOpen(true);
-                            }}
-                            className="h-8 w-8 p-0 hover:bg-orange-100 dark:hover:bg-orange-900/20"
-                          >
-                            <Shield className="h-4 w-4 text-orange-600" />
-                          </Button>
-
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                              setSelectedParcel(parcel);
-                              setIsDeleteModalOpen(true);
-                            }}
-                            className="h-8 w-8 p-0 hover:bg-red-100 dark:hover:bg-red-900/20"
-                          >
-                            <Trash2 className="h-4 w-4 text-red-600" />
-                          </Button>
-
-                          {/* Assignment/Reassignment button */}
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                              setSelectedParcel(parcel);
-                              if (parcel.deliveryPersonnel) {
-                                // Pre-fill form with current assignment data for reassignment
-                                const dp = parcel.deliveryPersonnel;
-                                setAssignmentData({
-                                  deliveryPersonnel: {
-                                    name: dp.name,
-                                    email: dp.email,
-                                    phone: dp.phone,
-                                    employeeId: dp.employeeId || "",
-                                    vehicleInfo: {
-                                      type: dp.vehicleInfo?.type || "",
-                                      plateNumber:
-                                        dp.vehicleInfo?.plateNumber || "",
-                                    },
-                                  },
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                setSelectedParcel(parcel);
+                                setStatusUpdate({
+                                  status: parcel.currentStatus,
+                                  location: "",
                                   note: "",
                                 });
-                              } else {
-                                // Reset form for new assignment
-                                resetAssignmentForm();
+                                setIsStatusModalOpen(true);
+                              }}
+                              className="h-8 w-8 p-0 hover:bg-green-100 dark:hover:bg-green-900/20"
+                            >
+                              <Edit className="h-4 w-4 text-green-600" />
+                            </Button>
+
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                setSelectedParcel(parcel);
+                                setIsBlockModalOpen(true);
+                              }}
+                              className="h-8 w-8 p-0 hover:bg-orange-100 dark:hover:bg-orange-900/20"
+                            >
+                              <Shield className="h-4 w-4 text-orange-600" />
+                            </Button>
+
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                setSelectedParcel(parcel);
+                                setIsDeleteModalOpen(true);
+                              }}
+                              className="h-8 w-8 p-0 hover:bg-red-100 dark:hover:bg-red-900/20"
+                            >
+                              <Trash2 className="h-4 w-4 text-red-600" />
+                            </Button>
+
+                            {/* Assignment/Reassignment button */}
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                setSelectedParcel(parcel);
+                                if (parcel.deliveryPersonnel) {
+                                  // Pre-fill form with current assignment data for reassignment
+                                  const dp = parcel.deliveryPersonnel;
+                                  setAssignmentData({
+                                    deliveryPersonnel: {
+                                      name: dp.name,
+                                      email: dp.email,
+                                      phone: dp.phone,
+                                      employeeId: dp.employeeId || "",
+                                      vehicleInfo: {
+                                        type: dp.vehicleInfo?.type || "",
+                                        plateNumber:
+                                          dp.vehicleInfo?.plateNumber || "",
+                                      },
+                                    },
+                                    note: "",
+                                  });
+                                } else {
+                                  // Reset form for new assignment
+                                  resetAssignmentForm();
+                                }
+                                setIsAssignmentModalOpen(true);
+                              }}
+                              className="h-8 w-8 p-0 hover:bg-purple-100 dark:hover:bg-purple-900/20"
+                              title={
+                                parcel.deliveryPersonnel
+                                  ? "Reassign Delivery Personnel"
+                                  : "Assign Delivery Personnel"
                               }
-                              setIsAssignmentModalOpen(true);
-                            }}
-                            className="h-8 w-8 p-0 hover:bg-purple-100 dark:hover:bg-purple-900/20"
-                            title={
-                              parcel.deliveryPersonnel
-                                ? "Reassign Delivery Personnel"
-                                : "Assign Delivery Personnel"
-                            }
-                          >
-                            <Truck className="h-4 w-4 text-purple-600" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                            >
+                              <Truck className="h-4 w-4 text-purple-600" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             </div>
           )}
 
