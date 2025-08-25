@@ -3,6 +3,7 @@
 import { Bell, ChevronsUpDown, LogOut, User } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,6 +24,7 @@ import {
   useLogoutMutation,
   useUserInfoQuery,
 } from "@/redux/feature/auth/auth.api";
+import { useGetUserNotificationsQuery } from "@/redux/feature/parcel/parcel.api";
 import { useAppDispatch } from "@/redux/hook";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
@@ -40,12 +42,20 @@ export function NavUser({
   const navigate = useNavigate();
   const [logout, { isLoading: isLoggingOut }] = useLogoutMutation();
   const { data: userData } = useUserInfoQuery(undefined);
+  const { data: notifications } = useGetUserNotificationsQuery(undefined);
 
   // const fallbackAvatar = user?.name[0] || "S";
   const avatarFallback = user.name ? user?.name[0] : "D";
 
   // Get user role for dynamic routing
   const userRole = userData?.data?.role?.toLowerCase() || "user";
+
+  const userNotifications = notifications?.data || [];
+
+  // Calculate unread notifications count
+  const unreadCount = Array.isArray(userNotifications)
+    ? userNotifications.filter((n) => !n.read).length
+    : 0;
 
   const dispatch = useAppDispatch();
 
@@ -62,11 +72,6 @@ export function NavUser({
 
   const handleProfileClick = () => {
     // Navigate to profile based on user role
-    navigate(`/${userRole}/profile`);
-  };
-
-  const handleAccountClick = () => {
-    // Navigate to profile settings based on user role
     navigate(`/${userRole}/profile`);
   };
 
@@ -126,6 +131,11 @@ export function NavUser({
               <DropdownMenuItem onClick={handleNotificationsClick}>
                 <Bell />
                 Notifications
+                {unreadCount > 0 && (
+                  <Badge variant="destructive" className="ml-auto">
+                    {unreadCount}
+                  </Badge>
+                )}
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />

@@ -176,6 +176,15 @@ export const parcelApi = baseApi.injectEndpoints({
       }),
       providesTags: ["PARCEL"],
     }),
+
+    // Get user notifications from parcel status updates
+    getUserNotifications: builder.query({
+      query: () => ({
+        url: "/parcel/notifications",
+        method: "GET",
+      }),
+      providesTags: ["PARCEL"],
+    }),
   }),
 });
 
@@ -205,4 +214,5 @@ export const {
   // Shared
   useGetParcelByIdQuery,
   useGetParcelStatusHistoryQuery,
+  useGetUserNotificationsQuery,
 } = parcelApi;
