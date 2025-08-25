@@ -1,6 +1,6 @@
 "use client";
 
-import { BadgeCheck, Bell, ChevronsUpDown, LogOut, User } from "lucide-react";
+import { Bell, ChevronsUpDown, LogOut, User } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -66,8 +66,8 @@ export function NavUser({
   };
 
   const handleAccountClick = () => {
-    // Navigate to account settings based on user role
-    navigate(`/${userRole}/account`);
+    // Navigate to profile settings based on user role
+    navigate(`/${userRole}/profile`);
   };
 
   const handleNotificationsClick = () => {
@@ -122,10 +122,6 @@ export function NavUser({
               <DropdownMenuItem onClick={handleProfileClick}>
                 <User />
                 My Profile
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleAccountClick}>
-                <BadgeCheck />
-                Account
               </DropdownMenuItem>
               <DropdownMenuItem onClick={handleNotificationsClick}>
                 <Bell />

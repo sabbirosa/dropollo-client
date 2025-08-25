@@ -5,7 +5,6 @@ import { lazy } from "react";
 const IncomingParcels = lazy(() => import("@/pages/Receiver/IncomingParcels"));
 const DeliveryHistory = lazy(() => import("@/pages/Receiver/DeliveryHistory"));
 const Profile = lazy(() => import("@/pages/Receiver/Profile"));
-const Account = lazy(() => import("@/pages/Shared/Account"));
 const Notifications = lazy(() => import("@/pages/Shared/Notifications"));
 
 export const receiverSidebarItems: ISidebarItems[] = [
@@ -44,9 +43,9 @@ export const receiverSidebarItems: ISidebarItems[] = [
   },
   {
     title: "Account Settings",
-    url: "/receiver/account",
+    url: "/receiver/profile",
     icon: Settings,
-    component: Account,
+    component: Profile,
     showInSidebar: false,
   },
   {

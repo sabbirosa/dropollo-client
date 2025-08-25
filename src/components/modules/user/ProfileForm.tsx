@@ -18,8 +18,9 @@ import {
   useUpdateMyProfileMutation,
 } from "@/redux/feature/user/user.api";
 import type { IUser, TRole } from "@/types";
+import { formatDate } from "@/utils/parcelUtils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Lock, Mail, MapPin, Save, Shield, User } from "lucide-react";
+import { Calendar, Edit, Lock, Mail, MapPin, Phone, Save, Settings, Shield, User, UserCheck } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -59,6 +60,7 @@ export function ProfileForm() {
     useChangePasswordMutation();
 
   const [showPasswordForm, setShowPasswordForm] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
 
   const user = data?.data as IUser;
 
@@ -101,6 +103,7 @@ export function ProfileForm() {
     try {
       await updateProfile(data).unwrap();
       toast.success("Profile updated successfully");
+      setIsEditMode(false);
     } catch {
       toast.error("Failed to update profile");
     }
@@ -176,149 +179,290 @@ export function ProfileForm() {
       {/* Profile Information */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <User className="h-5 w-5" />
-            Profile Information
-          </CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              <User className="h-5 w-5" />
+              Profile Information
+            </CardTitle>
+            {!isEditMode && (
+              <Button onClick={() => setIsEditMode(true)} variant="outline">
+                <Edit className="h-4 w-4 mr-2" />
+                Edit Profile
+              </Button>
+            )}
+          </div>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 gap-4 mb-6">
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">Email</Label>
-              <div className="flex items-center gap-2 p-2 bg-gray-50 dark:bg-gray-800 rounded">
-                <Mail className="h-4 w-4 text-gray-500" />
-                <span className="text-sm">{user.email}</span>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">Role</Label>
-              <div className="flex items-center gap-2">
-                <Shield className="h-4 w-4 text-gray-500" />
-                <Badge className={getRoleBadgeColor(user.role)}>
-                  {user.role}
-                </Badge>
-              </div>
-            </div>
-          </div>
+          {!isEditMode ? (
+            // View Mode
+            <div className="space-y-6">
+              {/* Account Overview */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-blue-100 rounded-full">
+                      <User className="h-4 w-4 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-500">Full Name</p>
+                      <p className="font-medium">{user?.name || "Not provided"}</p>
+                    </div>
+                  </div>
 
-          <Separator className="my-6" />
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-green-100 rounded-full">
+                      <Mail className="h-4 w-4 text-green-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-500">Email Address</p>
+                      <p className="font-medium">{user?.email || "Not provided"}</p>
+                    </div>
+                  </div>
 
-          <Form {...profileForm}>
-            <form
-              onSubmit={profileForm.handleSubmit(onProfileSubmit)}
-              className="space-y-6"
-            >
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={profileForm.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Name</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={profileForm.control}
-                  name="phone"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Phone</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <div className="space-y-4">
-                <Label className="text-base font-medium flex items-center gap-2">
-                  <MapPin className="h-4 w-4" />
-                  Address
-                </Label>
-                <FormField
-                  control={profileForm.control}
-                  name="address.street"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Street</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={profileForm.control}
-                    name="address.city"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>City</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={profileForm.control}
-                    name="address.state"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>State</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-purple-100 rounded-full">
+                      <Phone className="h-4 w-4 text-purple-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-500">Phone Number</p>
+                      <p className="font-medium">{user?.phone || "Not provided"}</p>
+                    </div>
+                  </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={profileForm.control}
-                    name="address.zipCode"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Zip Code</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={profileForm.control}
-                    name="address.country"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Country</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-orange-100 rounded-full">
+                      <UserCheck className="h-4 w-4 text-orange-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-500">Account Role</p>
+                      <Badge className={getRoleBadgeColor(user.role)}>
+                        {user.role}
+                      </Badge>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-indigo-100 rounded-full">
+                      <Calendar className="h-4 w-4 text-indigo-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-500">Member Since</p>
+                      <p className="font-medium">
+                        {user?.createdAt ? formatDate(user.createdAt) : "Not available"}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-red-100 rounded-full">
+                      <Settings className="h-4 w-4 text-red-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-500">Account Status</p>
+                      <Badge variant="default" className="mt-1 bg-green-600">
+                        Active
+                      </Badge>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <Button type="submit" disabled={isUpdatingProfile}>
-                <Save className="mr-2 h-4 w-4" />
-                {isUpdatingProfile ? "Updating..." : "Update Profile"}
-              </Button>
-            </form>
-          </Form>
+              {/* Address Information */}
+              {user.address && (
+                <>
+                  <Separator className="my-6" />
+                  <div className="space-y-4">
+                    <Label className="text-base font-medium flex items-center gap-2">
+                      <MapPin className="h-4 w-4" />
+                      Address
+                    </Label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-sm font-medium text-gray-500">Street</p>
+                        <p className="font-medium">{user.address.street || "Not provided"}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-500">City</p>
+                        <p className="font-medium">{user.address.city || "Not provided"}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-500">State</p>
+                        <p className="font-medium">{user.address.state || "Not provided"}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-500">Zip Code</p>
+                        <p className="font-medium">{user.address.zipCode || "Not provided"}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-500">Country</p>
+                        <p className="font-medium">{user.address.country || "Not provided"}</p>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          ) : (
+            // Edit Mode
+            <>
+              <div className="grid grid-cols-2 gap-4 mb-6">
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Email</Label>
+                  <div className="flex items-center gap-2 p-2 bg-gray-50 dark:bg-gray-800 rounded">
+                    <Mail className="h-4 w-4 text-gray-500" />
+                    <span className="text-sm">{user.email}</span>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Role</Label>
+                  <div className="flex items-center gap-2">
+                    <Shield className="h-4 w-4 text-gray-500" />
+                    <Badge className={getRoleBadgeColor(user.role)}>
+                      {user.role}
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+
+              <Separator className="my-6" />
+
+              <Form {...profileForm}>
+                <form
+                  onSubmit={profileForm.handleSubmit(onProfileSubmit)}
+                  className="space-y-6"
+                >
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={profileForm.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Name</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={profileForm.control}
+                      name="phone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Phone</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="space-y-4">
+                    <Label className="text-base font-medium flex items-center gap-2">
+                      <MapPin className="h-4 w-4" />
+                      Address
+                    </Label>
+                    <FormField
+                      control={profileForm.control}
+                      name="address.street"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Street</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField
+                        control={profileForm.control}
+                        name="address.city"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>City</FormLabel>
+                            <FormControl>
+                              <Input {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={profileForm.control}
+                        name="address.state"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>State</FormLabel>
+                            <FormControl>
+                              <Input {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField
+                        control={profileForm.control}
+                        name="address.zipCode"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Zip Code</FormLabel>
+                            <FormControl>
+                              <Input {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={profileForm.control}
+                        name="address.country"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Country</FormLabel>
+                            <FormControl>
+                              <Input {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex gap-3">
+                    <Button type="submit" disabled={isUpdatingProfile}>
+                      <Save className="mr-2 h-4 w-4" />
+                      {isUpdatingProfile ? "Updating..." : "Save Changes"}
+                    </Button>
+                    <Button 
+                      type="button" 
+                      variant="outline"
+                      onClick={() => {
+                        setIsEditMode(false);
+                        // Reset form to current values
+                        profileForm.reset({
+                          name: user.name,
+                          phone: user.phone,
+                          address: user.address,
+                        });
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </form>
+              </Form>
+            </>
+          )}
         </CardContent>
       </Card>
 

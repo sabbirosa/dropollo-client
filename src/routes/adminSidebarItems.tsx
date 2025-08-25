@@ -13,7 +13,6 @@ const Analytics = lazy(() => import("@/pages/Admin/Analytics"));
 const UserManagement = lazy(() => import("@/pages/Admin/UserManagement"));
 const ParcelManagement = lazy(() => import("@/pages/Admin/ParcelManagement"));
 const Profile = lazy(() => import("@/pages/Admin/Profile"));
-const Account = lazy(() => import("@/pages/Shared/Account"));
 const Notifications = lazy(() => import("@/pages/Shared/Notifications"));
 
 export const adminSidebarItems: ISidebarItems[] = [
@@ -66,9 +65,9 @@ export const adminSidebarItems: ISidebarItems[] = [
   },
   {
     title: "Account Settings",
-    url: "/admin/account",
+    url: "/admin/profile",
     icon: Settings,
-    component: Account,
+    component: Profile,
     showInSidebar: false,
   },
   {

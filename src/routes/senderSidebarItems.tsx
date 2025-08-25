@@ -5,7 +5,6 @@ import { lazy } from "react";
 
 const MyParcels = lazy(() => import("@/pages/Sender/MyParcels"));
 const Profile = lazy(() => import("@/pages/Sender/Profile"));
-const Account = lazy(() => import("@/pages/Shared/Account"));
 const Notifications = lazy(() => import("@/pages/Shared/Notifications"));
 
 export const senderSidebarItems: ISidebarItems[] = [
@@ -44,9 +43,9 @@ export const senderSidebarItems: ISidebarItems[] = [
   },
   {
     title: "Account Settings",
-    url: "/sender/account",
+    url: "/sender/profile",
     icon: Settings,
-    component: Account,
+    component: Profile,
     showInSidebar: false,
   },
   {
